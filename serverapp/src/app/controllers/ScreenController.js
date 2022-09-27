@@ -88,6 +88,13 @@ class ScreenController {
         ) {
             query.screenCode = { $in: searchModel.Screen_Code }
         }
+        if (
+            !!searchModel.Description &&
+            Array.isArray(searchModel.Description) &&
+            searchModel.Description.length > 0
+        ) {
+            query.screenDescription = { $in: searchModel.Description }
+        }
         Screen.paginate({ $and: [query] }, options).then(function (result) {
             return res.json({
                 result,

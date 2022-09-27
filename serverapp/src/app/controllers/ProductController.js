@@ -475,8 +475,8 @@ class ProductController {
             query._id = { $in: searchModel.ProductName }
         }
 
-        if (!!searchModel.Product_Sellprice) {
-            query.Product_Sellprice = { $in: searchModel.Product_Sellprice }
+        if (!!searchModel.Price) {
+            query.salePrice = { $in: searchModel.Price }
         }
 
         if (!!searchModel.CategoryId && searchModel.CategoryId.length > 0) {

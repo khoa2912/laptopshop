@@ -230,6 +230,22 @@ class AuthController {
             query.status = { $in: searchModel.StatusName }
         }
 
+        if (
+            !!searchModel.Account_Name &&
+            Array.isArray(searchModel.Account_Name) &&
+            searchModel.Account_Name.length > 0
+        ) {
+            query._id = { $in: searchModel.Account_Name }
+        }
+
+        if (
+            !!searchModel.Email &&
+            Array.isArray(searchModel.Email) &&
+            searchModel.Email.length > 0
+        ) {
+            query.email = { $in: searchModel.Email }
+        }
+
         User.paginate({ $and: [query] }, options).then(function (result) {
             return res.json({
                 result,

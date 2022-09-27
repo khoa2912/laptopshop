@@ -76,6 +76,13 @@ class RoleController {
         ) {
             query.nameRole = { $in: searchModel.Role_Name }
         }
+        if (
+            !!searchModel.Status &&
+            Array.isArray(searchModel.Status) &&
+            searchModel.Status.length > 0
+        ) {
+            query.status = { $in: searchModel.Status }
+        }
         Role.paginate({ $and: [query] }, options).then(function (result) {
             return res.json({
                 result,

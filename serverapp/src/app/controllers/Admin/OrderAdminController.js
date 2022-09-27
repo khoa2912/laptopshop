@@ -174,6 +174,30 @@ class OrderAdminController {
             query._id = { $in: searchModel.Order_Code }
         }
 
+        if (
+            !!searchModel.Address_Name &&
+            Array.isArray(searchModel.Address_Name) &&
+            searchModel.Address_Name.length > 0
+        ) {
+            query.addressId = { $in: searchModel.Address_Name }
+        }
+
+        if (
+            !!searchModel.Payment_Status &&
+            Array.isArray(searchModel.Payment_Status) &&
+            searchModel.Payment_Status.length > 0
+        ) {
+            query.paymentStatus = { $in: searchModel.Payment_Status }
+        }
+
+        if (
+            !!searchModel.Payment_Type &&
+            Array.isArray(searchModel.Payment_Type) &&
+            searchModel.Payment_Type.length > 0
+        ) {
+            query.paymentType = { $in: searchModel.Payment_Type }
+        }
+
         // if (!!searchModel.UserId && searchModel.UserId.length > 0) {
         //     query.user._id = { $in: searchModel.UserId }
         // }
