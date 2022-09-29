@@ -18,9 +18,9 @@ cloudinary.config({
 })
 class ScreenController {
     async create(req, res, next) {
-        const { sreenName, screenCode, screenDescription, status } = req.body
+        const { screenName, screenCode, screenDescription, status } = req.body
         const screen = new Screen({
-            sreenName,
+            screenName,
             screenCode,
             screenDescription,
             status,
@@ -43,7 +43,7 @@ class ScreenController {
         try {
             const screens = await Screen.find({})
                 .select(
-                    '_id sreenName screenCode screenDescription status'
+                    '_id screenName screenCode screenDescription status'
                 )
                 .populate(
                     { path: 'user', select: '_id firstname lastname' }

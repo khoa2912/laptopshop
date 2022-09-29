@@ -2,7 +2,7 @@ const mongoose = require('mongoose')
 const mongoosePaginate = require('mongoose-paginate')
 const screenSchema = new mongoose.Schema(
     {
-        sreenName: {
+        screenName: {
             type: String,
             required: true,
             trim: true,

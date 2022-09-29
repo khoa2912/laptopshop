@@ -12,5 +12,25 @@ router.post(
     upload.fields([{ name: 'banners' }, { name: 'products' }]),
     PageController.createPage
 )
+router.post(
+    `/getPages`,
+    requireSignin,
+    adminMiddleware,
+    PageController.getPages
+)
+
+router.post(
+    `/getAllPages`,
+    requireSignin,
+    adminMiddleware,
+    PageController.getAllPages
+)
+
+router.post(
+    `/getDataFilterPage`,
+    requireSignin,
+    adminMiddleware,
+    PageController.getDataFilterPage
+)
 
 module.exports = router

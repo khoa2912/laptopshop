@@ -1,5 +1,5 @@
 const mongoose = require('mongoose')
-
+const mongoosePaginate = require('mongoose-paginate')
 const cartSchema = new mongoose.Schema(
     {
         title: {
@@ -40,4 +40,5 @@ const cartSchema = new mongoose.Schema(
     { timestamps: true }
 )
 
+cartSchema.plugin(mongoosePaginate)
 module.exports = mongoose.model('Page', cartSchema)

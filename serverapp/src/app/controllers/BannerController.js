@@ -48,10 +48,10 @@ class BannerController {
             createdBy: req.user.id,
         })
         // eslint-disable-next-line consistent-return
-        banner.save((error, display) => {
+        banner.save((error, banner) => {
             if (error) return res.status(400).json({ error })
-            if (display) {
-                res.status(201).json({ display })
+            if (banner) {
+                res.status(201).json({ banner })
             }
         })
     }

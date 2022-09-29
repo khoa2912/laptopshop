@@ -160,7 +160,7 @@ class ProductController {
             descriptionTable: descriptionTable,
             productPicture,
             category: req.body.category,
-            createdBy: req.user.id,
+            createdBy: req.user._id,
         })
         product.save((error, product) => {
             if (error) return res.status(400).json({ error })
