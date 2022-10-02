@@ -4,7 +4,7 @@ const router = express.Router()
 const ScreenHandlers = require('../app/controllers/ScreenController')
 const { requireSignin } = require('../middleware')
 
-router.post('/createScreen', requireSignin, ScreenHandlers.create)
+router.post('/createScreen', requireSignin, ScreenHandlers.createScreen)
 router.post('/getScreens', requireSignin, ScreenHandlers.getScreens)
 router.post('/getDataFilterScreen', requireSignin, ScreenHandlers.getDataFilterScreen)
 router.post('/getAllScreens', requireSignin, ScreenHandlers.getAllScreens)

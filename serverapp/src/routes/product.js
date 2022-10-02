@@ -21,8 +21,8 @@ const upload = multer({ storage })
 
 router.post(
     '/create',
-    // requireSignin,
-    // adminMiddleware,
+    requireSignin,
+    adminMiddleware,
     // upload.array('productPicture'),
     ProductController.create
 )
@@ -39,6 +39,8 @@ router.post('/getDataFilter', ProductController.getDataFilter)
 router.post('/uploadPicture', ProductController.uploadPicture)
 router.post('/getProducts', ProductController.getProducts)
 router.get('/getAllProducts', ProductController.getAllProducts)
+// router.get('/productWarning', ProductController.productWarning)
+
 router.delete(
     '/deleteProductById',
     // requireSignin,

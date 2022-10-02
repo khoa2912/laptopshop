@@ -33,21 +33,28 @@ function generateSortOptions(sortFields, sortAscending = true) {
 
 class AuthController {
     async createUser(req, res, next) {
-        const { role, status, email, firstName, lastName } = req.body
+        const { firstName, lastName, email, hash_password, role, contactNumber, profilePicture, status } = req.body
         console.log(req.body)
 
-        const User = new User({
-            role,
-            status,
+        const password = await bcrypt.hash(hash_password, 10)
+
+        const user = new User ({
             firstName,
             lastName,
-            email
+            userName:email,
+            email,
+            hash_password:password,
+            role,
+            contactNumber,
+            profilePicture,
+            status,
+            createdBy: req.user.id,
         })
         // eslint-disable-next-line consistent-return
-        auth.save((error, auth) => {
+        user.save((error, user) => {
             if (error) return res.status(400).json({ error })
-            if (auth) {
-                res.status(201).json({ auth })
+            if (user) {
+                res.status(201).json({ user })
             }
         })
     }
@@ -177,9 +184,6 @@ class AuthController {
 
         try {
             const users = await User.find({})
-                .select(
-                    '_id role firstName lastName email status'
-                )
                 .exec()
             myCache.set('allUsers', users)
             res.status(200).json({ users })

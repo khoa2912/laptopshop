@@ -17,7 +17,7 @@ cloudinary.config({
     secure: true,
 })
 class ScreenController {
-    async create(req, res, next) {
+    async createScreen(req, res, next) {
         const { screenName, screenCode, screenDescription, status } = req.body
         const screen = new Screen({
             screenName,
@@ -82,11 +82,11 @@ class ScreenController {
         const searchModel = req.body
         const query = {}
         if (
-            !!searchModel.Screen_Code &&
-            Array.isArray(searchModel.Screen_Code) &&
-            searchModel.Screen_Code.length > 0
+            !!searchModel.Screen_Name &&
+            Array.isArray(searchModel.Screen_Name) &&
+            searchModel.Screen_Name.length > 0
         ) {
-            query.screenCode = { $in: searchModel.Screen_Code }
+            query.screenName = { $in: searchModel.Screen_Name }
         }
         if (
             !!searchModel.Description &&

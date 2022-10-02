@@ -159,8 +159,8 @@ class ProductController {
             description: req.body.description,
             descriptionTable: descriptionTable,
             productPicture,
-            category: req.body.category,
-            createdBy: req.user._id,
+            category: req.body.categoryId,
+            createdBy: req.user.id,
         })
         product.save((error, product) => {
             if (error) return res.status(400).json({ error })
