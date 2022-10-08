@@ -15,8 +15,14 @@ class PageController {
                 navigateTo: `/productClicked?categoryId=${req.body.category}&type=${req.body.type}`,
             }))
         }
-        // eslint-disable-next-line no-underscore-dangle
-        req.body.createdBy = req.user._id
+        const page = new Page({
+            title,
+            description,
+            banners,
+            products,
+            category: req.body.category,
+            createdBy: req.user._id,
+        })
         // eslint-disable-next-line consistent-return
         Page.findOne({ category: req.body.category }).exec((error, page) => {
             if (error) return res.status(400).json({ error })

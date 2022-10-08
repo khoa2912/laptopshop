@@ -73,6 +73,20 @@ class ScreenController {
         }
     }
 
+    deleteScreenById = (req, res) => {
+        const { screenId } = req.body.payload
+        if (screenId) {
+            Screen.deleteMany({ _id: screenId }).exec((error, result) => {
+                if (error) return res.status(400).json({ error })
+                if (result) {
+                    res.status(202).json({ result })
+                }
+            })
+        } else {
+            res.status(400).json({ error: 'Params required' })
+        }
+    }
+
     getDataFilterScreen = async (req, res, next) => {
         const options = {
             limit: 99,

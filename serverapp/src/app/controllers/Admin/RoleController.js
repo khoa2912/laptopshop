@@ -44,6 +44,20 @@ class RoleController {
         }
     }
 
+    deleteRoleById = (req, res) => {
+        const { roleId } = req.body.payload
+        if (roleId) {
+            Role.deleteMany({ _id: roleId }).exec((error, result) => {
+                if (error) return res.status(400).json({ error })
+                if (result) {
+                    res.status(202).json({ result })
+                }
+            })
+        } else {
+            res.status(400).json({ error: 'Params required' })
+        }
+    }
+
     async getAllRoles(req, res, next) {
         res.setHeader('Access-Control-Allow-Origin', '*')
         res.setHeader('Access-Control-Allow-Headers', '*')

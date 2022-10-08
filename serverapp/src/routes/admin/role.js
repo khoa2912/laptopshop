@@ -5,7 +5,12 @@ const {
     userMiddleware,
     adminMiddleware,
 } = require('../../middleware')
-
+router.delete(
+    '/deleteRoleById',
+    // requireSignin,
+    // adminMiddleware,
+    RoleController.deleteRoleById
+)
 router.post('/create', requireSignin, adminMiddleware, RoleController.create)
 router.post('/getRoles', requireSignin, adminMiddleware, RoleController.getRoles)
 router.post('/getAllRoles', requireSignin, adminMiddleware, RoleController.getAllRoles)

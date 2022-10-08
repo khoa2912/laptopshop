@@ -7,6 +7,12 @@ const { requireSignin } = require('../middleware')
 router.post('/createScreen', requireSignin, ScreenHandlers.createScreen)
 router.post('/getScreens', requireSignin, ScreenHandlers.getScreens)
 router.post('/getDataFilterScreen', requireSignin, ScreenHandlers.getDataFilterScreen)
+router.delete(
+    '/deleteScreenById',
+    // requireSignin,
+    // adminMiddleware,
+    ScreenHandlers.deleteScreenById
+)
 router.post('/getAllScreens', requireSignin, ScreenHandlers.getAllScreens)
 router.get('/screens', requireSignin, ScreenHandlers.getAllScreens)
 module.exports = router
