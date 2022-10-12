@@ -31,6 +31,11 @@ router.delete(
     // adminMiddleware,
     AdminAuthController.deleteAccountById
 )
+router.post(
+    '/updateUser',
+    // requireSignin,
+    AdminAuthController.updateUser
+)
 router.post('/refresh_token', AdminAuthController.getAccessToken)
 router.get('/infor', requireSignin, AdminAuthController.getUserInfor)
 router.post('/setstatus', AdminAuthController.setStatusUser)

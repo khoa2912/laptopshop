@@ -2,7 +2,7 @@ const path = require('path')
 const express = require('express')
 const bodyParser = require('body-parser')
 const app = express()
-
+var moment = require('moment');
 const handlebars = require('express-handlebars')
 const morgan = require('morgan')
 const methodOverride = require('method-override')
@@ -83,7 +83,10 @@ app.get('/productWarning',async (req, res) => {
             let productWarning = []
             // eslint-disable-next-line array-callback-return
             allProducts.map((item) => {
+                
                 if (item.quantity - item.quantitySold <= 10) {
+                    item['time'] = moment().format();
+                    console.log(item)
                     productWarning.push(item)
                 }
             })

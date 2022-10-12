@@ -68,6 +68,27 @@ class BannerController {
         }
     }
 
+    async updateBanner(req, res, next) {
+        Banner.findOneAndUpdate(
+            { _id: req.body._id },
+            {
+                $set: {
+                    nameBanner: req.body.nameBanner,
+                    codeBanner: req.body.codeBanner,
+                    image: req.body.image,
+                    slug: req.body.slug
+                },
+            },
+            { new: true, upsert: true }
+        ).exec((error, result) => {
+            console.log(error)
+            if (error) return res.status(400).json({ error })
+            if (result) {
+                res.status(201).json({ result })
+            }
+        })
+    }
+
     deleteBannerById = (req, res) => {
         const { bannerId } = req.body.payload
         if (bannerId) {

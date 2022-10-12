@@ -11,6 +11,11 @@ router.delete(
     // adminMiddleware,
     RoleController.deleteRoleById
 )
+router.post(
+    '/updateRole',
+    // requireSignin,
+    RoleController.updateRole
+)
 router.post('/create', requireSignin, adminMiddleware, RoleController.create)
 router.post('/getRoles', requireSignin, adminMiddleware, RoleController.getRoles)
 router.post('/getAllRoles', requireSignin, adminMiddleware, RoleController.getAllRoles)

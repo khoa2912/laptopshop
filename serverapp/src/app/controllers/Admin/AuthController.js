@@ -58,6 +58,35 @@ class AuthController {
             }
         })
     }
+
+    async updateUser(req, res, next) {
+        const password = await bcrypt.hash(hash_password, 10)
+
+        User.findOneAndUpdate(
+            { _id: req.body._id },
+            {
+                $set: {
+                    firstName: req.body.firstName,
+                    lastName: req.body.lastName,
+                    userName:email,
+                    email: req.body.email,
+                    hash_password: password,
+                    role: req.body.role,
+                    contactNumber: req.body.contactNumber,
+                    profilePicture: req.body.profilePicture,
+                    status: req.body.status,
+                },
+            },
+            { new: true, upsert: true }
+        ).exec((error, user) => {
+            console.log(error)
+            if (error) return res.status(400).json({ error })
+            if (user) {
+                res.status(201).json({ user })
+            }
+        })
+    }
+
     // [POST] /buyer/signup
     signup(req, res, next) {
         User.findOne({ email: req.body.email }).exec(async (error, user) => {

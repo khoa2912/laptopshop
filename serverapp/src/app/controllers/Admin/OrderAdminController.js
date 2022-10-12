@@ -1,5 +1,6 @@
 const Order = require('../../models/Order')
-
+const NodeCache = require('node-cache')
+const myCache = new NodeCache({ stdTTL: 100, checkperiod: 120 })
 function generateSortOptions(sortFields, sortAscending = true) {
     const sort = {}
     const sortType = sortAscending ? 1 : -1
@@ -70,13 +71,8 @@ class OrderAdminController {
 
         try {
             const orders = await Order.find({})
-                .select(
-                    '_id totalAmount items paymentStatus quanpaymentTypetity orderStatus'
-                )
                 .populate(
-                    { path: 'user', select: '_id firstname lastname' },
-                    { path: 'addressObject' },
-                    { path: 'userObject' },
+                    { path: 'user'}
                 )
                 .exec()
             myCache.set('allOrders', orders)
@@ -145,6 +141,7 @@ class OrderAdminController {
                 {
                     path: 'addressObject',
                 },
+                { path: 'items.productId' },
             ],
         }
         console.log(req.body)

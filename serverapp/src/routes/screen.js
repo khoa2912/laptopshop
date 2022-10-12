@@ -13,6 +13,11 @@ router.delete(
     // adminMiddleware,
     ScreenHandlers.deleteScreenById
 )
+router.post(
+    '/updateScreen',
+    // requireSignin,
+    ScreenHandlers.updateScreen
+)
 router.post('/getAllScreens', requireSignin, ScreenHandlers.getAllScreens)
 router.get('/screens', requireSignin, ScreenHandlers.getAllScreens)
 module.exports = router

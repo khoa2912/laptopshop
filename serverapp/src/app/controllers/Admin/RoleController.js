@@ -44,6 +44,27 @@ class RoleController {
         }
     }
 
+    async updateRole(req, res, next) {
+        Role.findOneAndUpdate(
+            { _id: req.body._id },
+            {
+                $set: {
+                    codeRole: req.body.codeRole,
+                    nameRole: req.body.nameRole,
+                    descriptionRole: req.body.descriptionRole,
+                    status: req.body.status
+                },
+            },
+            { new: true, upsert: true }
+        ).exec((error, result) => {
+            console.log(error)
+            if (error) return res.status(400).json({ error })
+            if (result) {
+                res.status(201).json({ result })
+            }
+        })
+    }
+
     deleteRoleById = (req, res) => {
         const { roleId } = req.body.payload
         if (roleId) {

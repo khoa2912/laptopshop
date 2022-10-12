@@ -8,6 +8,11 @@ router.post('/createBanner', requireSignin, BannerController.createBanner)
 router.post(`/getDataFilterBanner`, requireSignin, BannerController.getDataFilterBanner)
 router.post(`/getBanners`, requireSignin, BannerController.getBanners)
 router.post(`/getAllBanners`, requireSignin, BannerController.getAllBanners)
+router.post(
+    '/updateBanner',
+    // requireSignin,
+    BannerController.updateBanner
+)
 router.delete(
     '/deleteBannerById',
     // requireSignin,
