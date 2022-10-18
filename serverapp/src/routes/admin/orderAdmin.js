@@ -5,10 +5,10 @@ const OrderAdminController = require('../../app/controllers/Admin/OrderAdminCont
 const router = express.Router()
 
 router.post(
-    '/update',
+    '/updateOrderStatus',
     requireSignin,
     adminMiddleware,
-    OrderAdminController.updateOrder
+    OrderAdminController.updateOrderStatus
 )
 router.post(
     `/getCustomerOrders`,

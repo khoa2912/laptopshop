@@ -4,6 +4,8 @@ const jwt = require('jsonwebtoken')
 const bcrypt = require('bcrypt')
 const shortid = require('shortid')
 const User = require('../../models/User')
+const NodeCache = require('node-cache')
+const myCache = new NodeCache({ stdTTL: 100, checkperiod: 120 })
 
 function generateSortOptions(sortFields, sortAscending = true) {
     const sort = {}
@@ -60,16 +62,13 @@ class AuthController {
     }
 
     async updateUser(req, res, next) {
-        const password = await bcrypt.hash(hash_password, 10)
-
+        const password = await bcrypt.hash(req.body.hash_password, 10)
         User.findOneAndUpdate(
             { _id: req.body._id },
             {
                 $set: {
                     firstName: req.body.firstName,
                     lastName: req.body.lastName,
-                    userName:email,
-                    email: req.body.email,
                     hash_password: password,
                     role: req.body.role,
                     contactNumber: req.body.contactNumber,

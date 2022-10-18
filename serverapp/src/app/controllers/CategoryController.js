@@ -36,7 +36,8 @@ class CategoryController {
         res.header('Access-Control-Allow-Credentials', true)
         const categoryObject = {
             name: req.body.name,
-            slug: `${slugify(req.body.name)}-${shortid.generate()}`,
+            slug: `${slugify(req.body.name)}-${shortid.generate()}` ,
+            categoryImage: req.body.categoryImage
         }
         if (req.file) {
             categoryObject.categoryImage = `/uploads/${req.file.filename}`
