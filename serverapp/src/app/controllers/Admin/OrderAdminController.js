@@ -115,19 +115,22 @@ class OrderAdminController {
                             orderStatus: [
                                 {
                                     type: 'ordered',
-                                    date: Date.now(),
+                                    date: req.body.date,
                                     isCompleted: true,
                                 },
                                 {
                                     type: 'packed',
+                                    date: obj.orderStatus[1].date,
                                     isCompleted: false,
                                 },
                                 {
                                     type: 'shipped',
+                                    date: obj.orderStatus[2].date,
                                     isCompleted: false,
                                 },
                                 {
                                     type: 'delivered',
+                                    date: obj.orderStatus[3].date,
                                     isCompleted: false,
                                 },
                             ]
@@ -150,19 +153,22 @@ class OrderAdminController {
                             orderStatus: [
                                 {
                                     type: 'ordered',
+                                    date: obj.orderStatus[0].date,
                                     isCompleted: false,
                                 },
                                 {
                                     type: 'packed',
-                                    date: Date.now(),
+                                    date: req.body.date,
                                     isCompleted: true,
                                 },
                                 {
                                     type: 'shipped',
+                                    date: obj.orderStatus[2].date,
                                     isCompleted: false,
                                 },
                                 {
                                     type: 'delivered',
+                                    date: obj.orderStatus[3].date,
                                     isCompleted: false,
                                 },
                             ]
@@ -185,19 +191,22 @@ class OrderAdminController {
                             orderStatus: [
                                 {
                                     type: 'ordered',
+                                    date: obj.orderStatus[0].date,
                                     isCompleted: false,
                                 },
                                 {
                                     type: 'packed',
+                                    date: obj.orderStatus[1].date,
                                     isCompleted: false,
                                 },
                                 {
                                     type: 'shipped',
-                                    date: Date.now(),
+                                    date: req.body.date,
                                     isCompleted: true,
                                 },
                                 {
                                     type: 'delivered',
+                                    date: obj.orderStatus[3].date,
                                     isCompleted: false,
                                 },
                             ]
@@ -220,19 +229,22 @@ class OrderAdminController {
                             orderStatus: [
                                 {
                                     type: 'ordered',
+                                    date: obj.orderStatus[0].date,
                                     isCompleted: false,
                                 },
                                 {
                                     type: 'packed',
+                                    date: obj.orderStatus[1].date,
                                     isCompleted: false,
                                 },
                                 {
                                     type: 'shipped',
+                                    date: obj.orderStatus[2].date,
                                     isCompleted: false,
                                 },
                                 {
                                     type: 'delivered',
-                                    date: Date.now(),
+                                    date: req.body.date,
                                     isCompleted: true,
                                 },
                             ]

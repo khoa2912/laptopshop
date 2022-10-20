@@ -13,6 +13,7 @@ const postRouter = require('./post')
 const screenRouter = require('./screen')
 const commentRouter = require('./comment')
 const bannerRouter = require('./banner')
+const actionRouter = require('./action')
 
 function route(app) {
     app.use('/admin/order', orderAdminRouter)
@@ -30,6 +31,7 @@ function route(app) {
     app.use('/screen', screenRouter)
     app.use('/comment', commentRouter)
     app.use('/banner', bannerRouter)
+    app.use('/action', actionRouter)
 }
 
 module.exports = route

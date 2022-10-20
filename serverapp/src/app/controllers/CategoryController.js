@@ -70,68 +70,104 @@ class CategoryController {
         })
     }
 
-    async updateCategories(req, res) {
-        res.setHeader('Access-Control-Allow-Origin', '*')
-        res.setHeader('Access-Control-Allow-Headers', '*')
-        res.header('Access-Control-Allow-Credentials', true)
-        const { _id, name, parentId, type } = req.body
-        const updatedCategories = []
-        if (name instanceof Array) {
-            for (let i = 0; i < name.length; i++) {
-                const category = {
-                    name: name[i],
-                    type: type[i],
+    async updateCategories(req, res, next) {
+        Category.findOne({_id: req.body._id}, function(err, obj) {
+            console.log(req.body)
+            const tempSlug = `${slugify(req.body.nameCategory)}-${shortid.generate()}`;
+            console.log(tempSlug);
+            Category.updateOne(
+                { 
+                    _id: req.body._id, 
+                },
+                {
+                    $set: {
+                        name: req.body.nameCategory,
+                        slug: tempSlug,
+                        categoryImage: req.body.categoryImage
+                    }
                 }
-                if (parentId[i] !== '') {
-                    category.parentId = parentId[i]
+            ).exec((error, category) => {
+                if (error) return res.status(400).json({ error })
+                if (category) {
+                    res.status(201).json({ category })
                 }
-                // eslint-disable-next-line no-await-in-loop
-                const updatedCategory = await Category.findOneAndUpdate(
-                    { _id: _id[i] },
-                    category,
-                    { new: true }
-                )
-                updatedCategories.push(updatedCategory)
-            }
-            return res.status(201).json({ updatedCategories })
-        }
-        const category = {
-            name,
-            type,
-        }
-        if (parentId !== '') {
-            category.parentId = parentId
-        }
-        const updatedCategory = await Category.findOneAndUpdate(
-            { _id },
-            category,
-            {
-                new: true,
-            }
-        )
-        return res.status(201).json({ updatedCategory })
+            })
+        });
     }
 
-    async deleteCategories(req, res) {
-        res.setHeader('Access-Control-Allow-Origin', '*')
-        res.setHeader('Access-Control-Allow-Headers', '*')
-        res.header('Access-Control-Allow-Credentials', true)
-        const { ids } = req.body.payload
-        const deleteCategories = []
-        for (let i = 0; i < ids.length; i++) {
-            // eslint-disable-next-line no-await-in-loop
-            const deleteCategory = await Category.findOneAndDelete({
-                // eslint-disable-next-line no-underscore-dangle
-                _id: ids[i]._id,
-            })
-            deleteCategories.push(deleteCategory)
-        }
-        if (deleteCategories.length === ids.length) {
-            res.status(200).json({ message: 'Categories removed' })
-        } else {
-            res.status(400).json({ message: 'Something went wrong' })
-        }
+    // async updateCategories(req, res) {
+    //     res.setHeader('Access-Control-Allow-Origin', '*')
+    //     res.setHeader('Access-Control-Allow-Headers', '*')
+    //     res.header('Access-Control-Allow-Credentials', true)
+    //     const { _id, name, parentId, type } = req.body
+    //     const updatedCategories = []
+    //     if (name instanceof Array) {
+    //         for (let i = 0; i < name.length; i++) {
+    //             const category = {
+    //                 name: name[i],
+    //                 type: type[i],
+    //             }
+    //             if (parentId[i] !== '') {
+    //                 category.parentId = parentId[i]
+    //             }
+    //             // eslint-disable-next-line no-await-in-loop
+    //             const updatedCategory = await Category.findOneAndUpdate(
+    //                 { _id: _id[i] },
+    //                 category,
+    //                 { new: true }
+    //             )
+    //             updatedCategories.push(updatedCategory)
+    //         }
+    //         return res.status(201).json({ updatedCategories })
+    //     }
+    //     const category = {
+    //         name,
+    //         type,
+    //     }
+    //     if (parentId !== '') {
+    //         category.parentId = parentId
+    //     }
+    //     const updatedCategory = await Category.findOneAndUpdate(
+    //         { _id },
+    //         category,
+    //         {
+    //             new: true,
+    //         }
+    //     )
+    //     return res.status(201).json({ updatedCategory })
+    // }
+
+    deleteCategories = (req, res) => {
+        Category.deleteOne(req.body.ids).exec((error, category) => {
+            console.log(error)
+            if (error) return res.status(400).json({ error })
+            if (category) {
+                res.status(201).json({ category })
+            }
+        })
     }
+
+    // async deleteCategories(req, res) {
+    //     res.setHeader('Access-Control-Allow-Origin', '*')
+    //     res.setHeader('Access-Control-Allow-Headers', '*')
+    //     res.header('Access-Control-Allow-Credentials', true)
+    //     Category.deleteOne({_id: req.body.ids})
+    //     const { ids } = req.body.ids
+    //     const deleteCategories = []
+    //     for (let i = 0; i < ids.length; i++) {
+    //         // eslint-disable-next-line no-await-in-loop
+    //         const deleteCategory = await Category.findOneAndDelete({
+    //             // eslint-disable-next-line no-underscore-dangle
+    //             _id: ids[i]._id,
+    //         })
+    //         deleteCategories.push(deleteCategory)
+    //     }
+    //     if (deleteCategories.length === ids.length) {
+    //         res.status(200).json({ message: 'Categories removed' })
+    //     } else {
+    //         res.status(400).json({ message: 'Something went wrong' })
+    //     }
+    // }
     getDataFilter = async (req, res, next) => {
         const options = {
             limit: 99,
@@ -145,19 +181,7 @@ class CategoryController {
             Array.isArray(searchModel.CategoryName) &&
             searchModel.CategoryName.length > 0
         ) {
-            query._id = { $in: searchModel.CategoryName }
-        }
-
-        if (!!searchModel.Product_Sellprice) {
-            query.Product_Sellprice = { $in: searchModel.Product_Sellprice }
-        }
-
-        if (!!searchModel.CategoryId && searchModel.CategoryId.length > 0) {
-            query.category = { $in: searchModel.CategoryId }
-        }
-
-        if (!!searchModel.Status && searchModel.Status.length > 0) {
-            query.Status = { $in: searchModel.Status }
+            query.name = { $in: searchModel.CategoryName }
         }
         Category.paginate({ $and: [query] }, options).then(function (result) {
             return res.json({

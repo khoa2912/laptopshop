@@ -17,6 +17,15 @@ const roleSchema = new mongoose.Schema(
             type: String,
             trim: true,
         },
+        listRole: [
+            {
+                actionId: { 
+                    type: mongoose.Schema.Types.ObjectId, 
+                    ref: 'Action', 
+                    required: true, 
+                },
+            },
+        ],
         status: {
             type: String,
             default: 'active',
