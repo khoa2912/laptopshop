@@ -20,6 +20,11 @@ const tagSchema = new mongoose.Schema(
         updatedTime: {
             type: Date,
         },
+        parentId: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Tag',
+            required: true,
+        },
         createdBy: {
             type: mongoose.Schema.Types.ObjectId,
             ref: 'User',

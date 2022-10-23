@@ -10,7 +10,9 @@ const myCache = new NodeCache({ stdTTL: 100, checkperiod: 120 })
 // eslint-disable-next-line no-var
 class TagController {
     async createTag(req, res, next) {
+        console.log(req.body)
         const tag = new Tag({
+            parentId: req.body.parentId,
             tagName: req.body.tagName,
             tagSlug: slugify(req.body.tagName),
             createdTime: Date.now(),
@@ -35,6 +37,9 @@ class TagController {
             const tags = await Tag.find({})
                 .populate(
                     { path: 'user', select: '_id firstname lastname' }
+                )
+                .populate(
+                    { path: 'parentId'}
                 )
                 .exec()
             myCache.set('allTags', tags)
