@@ -23,7 +23,7 @@ const tagSchema = new mongoose.Schema(
         parentId: {
             type: mongoose.Schema.Types.ObjectId,
             ref: 'Tag',
-            required: true,
+            // required: true,
         },
         createdBy: {
             type: mongoose.Schema.Types.ObjectId,

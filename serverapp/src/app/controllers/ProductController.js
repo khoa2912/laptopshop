@@ -124,14 +124,7 @@ class ProductController {
                 return { img: item }
             })
         }
-
-        var tag = []
-        if(req.body.tag.length > 0) {
-            tag = await req.body.tag.map((item) => {
-                return { tag: item }
-            })
-        }
-
+        
         let descriptionTable = [
             {
                 baohanh: req.body.timeBaoHanh,
@@ -146,17 +139,6 @@ class ProductController {
                 khoiluong: req.body.khoiluong,
             },
         ]
-        /* descriptionTable.push({baohanh:req.body.timeBaoHanh});
-        descriptionTable.push({Series:req.body.series});
-        descriptionTable.push({color:req.body.color});
-        descriptionTable.push({cpu:req.body.cpu});
-        descriptionTable.push({cardDohoa:req.body.card});
-        descriptionTable.push({ram:req.body.ram});
-        descriptionTable.push({manhinh:req.body.manhinh});
-        descriptionTable.push({ocung:req.body.ocung});
-        descriptionTable.push({hedieuhanh:req.body.hedieuhanh});
-        descriptionTable.push({khoiluong:req.body.khoiluong}); */
-
         const product = new Product({
             name: req.body.name,
             slug: slugify(req.body.name),
@@ -166,7 +148,7 @@ class ProductController {
             description: req.body.description,
             descriptionTable: descriptionTable,
             productPicture,
-            tag,
+            tag: req.body.listTag,
             category: req.body.categoryId,
             createdBy: req.user.id,
         })
@@ -246,8 +228,6 @@ class ProductController {
             },
         ]
         Product.findOne({_id: req.body._id}, function(err, obj) {
-            // const index = obj?.orderStatus?.findIndex(item => item.type === req.body.type);
-            
             Product.updateOne(
                 { 
                     _id: req.body._id, 
@@ -377,9 +357,7 @@ class ProductController {
 
         try {
             const products = await Product.find({})
-                .select(
-                    '_id name regularPrice salePrice quantity quantitySold slug description productPicture category descriptionTable'
-                )
+                .populate({ path: 'tag' })
                 .populate({ path: 'category', select: '_id name' })
                 .exec()
             myCache.set('allProducts', products)
@@ -395,10 +373,12 @@ class ProductController {
         if (myCache.has('allProducts')) {
             res.status(200).json({ allProducts: myCache.get('allProducts') })
         } else {
-            const allProducts = await Product.find({}).populate({
+            const allProducts = await Product.find({})
+            .populate({
                 path: 'category',
                 select: '_id name',
             })
+            .populate({path: 'tag'})
             if (allProducts) {
                 myCache.set('allProducts', allProducts)
                 res.status(200).json({ allProducts })
