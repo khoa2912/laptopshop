@@ -11,12 +11,13 @@ const myCache = new NodeCache({ stdTTL: 100, checkperiod: 120 })
 // eslint-disable-next-line no-var
 class ActionController {
     async createAction(req, res, next) {
-        const { nameAction, description} = req.body
+        const { nameAction, description, date} = req.body
         console.log(req.body)
 
         const action = new Action({
             nameAction,
             description,
+            date,
             createdBy: req.user.id,
         })
         // eslint-disable-next-line consistent-return
@@ -36,7 +37,7 @@ class ActionController {
         try {
             const actions = await Action.find({})
                 .select(
-                    '_id nameAction description createdBy'
+                    '_id nameAction description date createdBy'
                 )
                 .populate(
                     { path: 'user', select: '_id firstname lastname' }
@@ -72,7 +73,8 @@ class ActionController {
             {
                 $set: {
                     nameAction: req.body.nameAction,
-                    description: req.body.description
+                    description: req.body.description,
+                    date: req.body.date
                 },
             },
             { new: true, upsert: true }

@@ -1,19 +1,23 @@
 const mongoose = require('mongoose')
 const mongoosePaginate = require('mongoose-paginate')
-const actionSchema = new mongoose.Schema(
+const tagSchema = new mongoose.Schema(
     {
-        nameAction: {
+        tagName: {
             type: String,
             required: true,
             unique: true,
             trim: true,
         },
-        description: {
+        tagSlug: {
             type: String,
             required: true,
             unique: true,
         },
-        date: {
+        createdTime: {
+            type: Date,
+            default: Date.now()
+        },    
+        updatedTime: {
             type: Date,
         },
         createdBy: {
@@ -22,8 +26,8 @@ const actionSchema = new mongoose.Schema(
             required: true,
         },
     },
-    { collection: 'Action' },
+    { collection: 'Tag' },
     { timestamps: true }
 )
-actionSchema.plugin(mongoosePaginate)
-module.exports = mongoose.model('Action', actionSchema)
+tagSchema.plugin(mongoosePaginate)
+module.exports = mongoose.model('Tag', tagSchema)

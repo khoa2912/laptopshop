@@ -2,6 +2,7 @@ const Product = require('../models/Product')
 const shortid = require('shortid')
 const slugify = require('slugify')
 const Category = require('../models/Category')
+const Tag = require('../models/Tag')
 const { json } = require('express')
 const ObjectId = require('mongodb').ObjectID
 const mongoose = require('mongoose')
@@ -124,6 +125,13 @@ class ProductController {
             })
         }
 
+        var tag = []
+        if(req.body.tag.length > 0) {
+            tag = await req.body.tag.map((item) => {
+                return { tag: item }
+            })
+        }
+
         let descriptionTable = [
             {
                 baohanh: req.body.timeBaoHanh,
@@ -155,10 +163,10 @@ class ProductController {
             regularPrice: req.body.regularPrice,
             salePrice: req.body.salePrice,
             quantity: req.body.quantity,
-
             description: req.body.description,
             descriptionTable: descriptionTable,
             productPicture,
+            tag,
             category: req.body.categoryId,
             createdBy: req.user.id,
         })
@@ -169,13 +177,60 @@ class ProductController {
             }
         })
     }
-    async updateProduct(req, res, next) {
-        var productPicture = []
-        if (req.files.length > 0) {
-            productPicture = req.files.map((file) => {
-                return { img: file.filename }
-            })
-        }
+
+    // async updateProduct(req, res, next) {
+        // var productPicture = []
+        // if (req.files.length > 0) {
+        //     productPicture = req.files.map((file) => {
+        //         return { img: file.filename }
+        //     })
+        // }
+    //     let descriptionTable = [
+    //         {
+    //             baohanh: req.body.timeBaoHanh,
+    //             Series: req.body.series,
+    //             color: req.body.color,
+    //             cpu: req.body.cpu,
+    //             cardDohoa: req.body.card,
+    //             ram: req.body.ram,
+    //             manhinh: req.body.manhinh,
+    //             ocung: req.body.ocung,
+    //             hedieuhanh: req.body.hedieuhanh,
+    //             khoiluong: req.body.khoiluong,
+    //         },
+    //     ]
+    //     Product.findOneAndUpdate(
+    //         { _id: req.body.id },
+    //         {
+    //             $set: {
+    //                 name: req.body.name,
+    //                 regularPrice: req.body.regularPrice,
+    //                 salePrice: req.body.salePrice,
+    //                 quantity: req.body.quantity,
+    //                 productPicture: req.body.productPicture,
+    //                 description: req.body.description,
+    //                 descriptionTable: descriptionTable,
+    //                 category: req.body.categoryId,
+    //             },
+    //         },
+    //         { new: true, upsert: true }
+    //     ).exec((error, product) => {
+    //         console.log(error)
+    //         if (error) return res.status(400).json({ error })
+    //         if (product) {
+    //             res.status(201).json({ product })
+    //         }
+    //     })
+    // }
+
+    updateProduct = (req, res) => {
+        // const ordStatus = Order.findById(req.body._id);
+        // var productPicture = []
+        // if (req.body.productPicture.length > 0) {
+        //     productPicture = req.files.map((file) => {
+        //         return { img: file.filename }
+        //     })
+        // }
         let descriptionTable = [
             {
                 baohanh: req.body.timeBaoHanh,
@@ -190,40 +245,65 @@ class ProductController {
                 khoiluong: req.body.khoiluong,
             },
         ]
-        console.log(req.body.timeBaoHanh)
-        // const product = new Product({
-        //     _id:req.body.id,
-        //     name: req.body.name,
-        //     slug: req.body.slug,
-        //     regularPrice: req.body.regularPrice,
-        //     salePrice: req.body.salePrice,
-        //     quantity: req.body.quantity,
-        //     description: req.body.description,
-        //     descriptionTable: descriptionTable,
-        //     category: ObjectId(req.body.category),
-        // })
-        Product.findOneAndUpdate(
-            { _id: req.body.id },
-            {
-                $set: {
-                    name: req.body.name,
-                    regularPrice: req.body.regularPrice,
-                    salePrice: req.body.salePrice,
-                    quantity: req.body.quantity,
-                    description: req.body.description,
-                    descriptionTable: descriptionTable,
-                    category: ObjectId(req.body.category),
+        Product.findOne({_id: req.body._id}, function(err, obj) {
+            // const index = obj?.orderStatus?.findIndex(item => item.type === req.body.type);
+            
+            Product.updateOne(
+                { 
+                    _id: req.body._id, 
                 },
-            },
-            { new: true, upsert: true }
-        ).exec((error, result) => {
-            console.log(error)
-            if (error) return res.status(400).json({ error })
-            if (result) {
-                res.status(201).json({ result })
-            }
-        })
+                {
+                    $set: {
+                        name: req.body.name,
+                        regularPrice: req.body.regularPrice,
+                        salePrice: req.body.salePrice,
+                        quantity: req.body.quantity,
+                        productPicture: req.body.productPicture,
+                        description: req.body.description,
+                        descriptionTable: descriptionTable,
+                        category: req.body.categoryId,
+                    },
+                }
+            ).exec((error, product) => {
+                if (error) return res.status(400).json({ error })
+                if (product) {
+                    res.status(201).json({ product })
+                }
+            })
+        });
     }
+
+    getProductByTag(req, res, next) {
+        const { tag } = req.params
+        Tag.findOne({ tag: tag })
+            .select('_id nameTag')
+            .exec((error, tag) => {
+                if (error) {
+                    return res.status(400).json({ error })
+                }
+                if (tag) {
+                    Product.find({ tag: tag._id }).exec(
+                        (error, products) => {
+                            if (error) {
+                                return res.status(400).json({ error })
+                            }
+
+                            if (tag.tagName) {
+                                if (products.length > 0) {
+                                    res.status(200).json({
+                                        tag,
+                                        products,
+                                    })
+                                }
+                            } else {
+                                res.status(200).json({ products })
+                            }
+                        }
+                    )
+                }
+            })
+    }
+
     getProductBySlug(req, res, next) {
         const { slug } = req.params
         Category.findOne({ slug: slug })

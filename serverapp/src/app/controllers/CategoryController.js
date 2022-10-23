@@ -138,11 +138,22 @@ class CategoryController {
     // }
 
     deleteCategories = (req, res) => {
-        Category.deleteOne(req.body.ids).exec((error, category) => {
-            console.log(error)
+        // const { catId } = req.body.payload
+        // if (catId) {
+        //     Category.deleteMany({ _id: catId }).exec((error, result) => {
+        //         if (error) return res.status(400).json({ error })
+        //         if (result) {
+        //             res.status(202).json({ result })
+        //         }
+        //     })
+        // } else {
+        //     res.status(400).json({ error: 'Params required' })
+        // }
+        // console.log(req.body.data.ids._id)
+        Category.deleteOne({ _id: req.body.data.ids._id}).exec((error, result) => {
             if (error) return res.status(400).json({ error })
-            if (category) {
-                res.status(201).json({ category })
+            if (result) {
+                res.status(202).json({ result })
             }
         })
     }

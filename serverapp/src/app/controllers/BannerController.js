@@ -5,7 +5,6 @@ const Banner = require('../models/Banner')
 // eslint-disable-next-line import/order
 const ObjectId = require('mongodb')
 const NodeCache = require('node-cache')
-
 const myCache = new NodeCache({ stdTTL: 100, checkperiod: 120 })
 
 // eslint-disable-next-line no-var

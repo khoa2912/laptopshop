@@ -3,6 +3,8 @@ const slugify = require('slugify')
 const { json } = require('express')
 const Role = require('../../models/Role')
 const ObjectId = require('mongodb').ObjectID
+const NodeCache = require('node-cache')
+const myCache = new NodeCache({ stdTTL: 100, checkperiod: 120 })
 
 class RoleController {
     async create(req, res, next) {
@@ -30,9 +32,6 @@ class RoleController {
 
         try {
             const roles = await Role.find({})
-                .select(
-                    '_id codeRole nameRole descriptionRole status createdBy'
-                )
                 .populate(
                     { path: 'user', select: '_id firstname lastname' }
                 )
