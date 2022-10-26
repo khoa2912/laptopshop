@@ -1,18 +1,17 @@
 const mongoose = require('mongoose')
 const mongoosePaginate = require('mongoose-paginate')
-const actionSchema = new mongoose.Schema(
+const roleactionSchema = new mongoose.Schema(
     {
-        actionName: {
-            type: String,
+        roleId: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Role',
             required: true,
-            // unique: true,
-            trim: true,
         },
-        actionSlug: {
-            type: String,
+        listAction: [{
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Action',
             required: true,
-            unique: true,
-        },
+        }],
         createdTime: {
             type: Date,
             default: Date.now()
@@ -26,8 +25,8 @@ const actionSchema = new mongoose.Schema(
             required: true,
         },
     },
-    { collection: 'Action' },
+    { collection: 'RoleAction' },
     { timestamps: true }
 )
-actionSchema.plugin(mongoosePaginate)
-module.exports = mongoose.model('Action', actionSchema)
+roleactionSchema.plugin(mongoosePaginate)
+module.exports = mongoose.model('roleaction', roleactionSchema)

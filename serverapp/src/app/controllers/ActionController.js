@@ -5,26 +5,24 @@ const Action = require('../models/Action')
 // eslint-disable-next-line import/order
 const ObjectId = require('mongodb')
 const NodeCache = require('node-cache')
-
 const myCache = new NodeCache({ stdTTL: 100, checkperiod: 120 })
 
 // eslint-disable-next-line no-var
 class ActionController {
     async createAction(req, res, next) {
-        const { nameAction, description, date} = req.body
-        console.log(req.body)
-
         const action = new Action({
-            nameAction,
-            description,
-            date,
+            actionName: req.body.actionName,
+            actionSlug: `${slugify(req.body.actionName)}-${shortid.generate()}`,
+            createdTime: Date.now(),
+            updatedTime: Date.now(),
             createdBy: req.user.id,
         })
+        console.log(action)
         // eslint-disable-next-line consistent-return
-        action.save((error, action) => {
+        action.save((error, result) => {
             if (error) return res.status(400).json({ error })
-            if (action) {
-                res.status(201).json({ action })
+            if (result) {
+                res.status(201).json({ result })
             }
         })
     }
@@ -36,9 +34,6 @@ class ActionController {
 
         try {
             const actions = await Action.find({})
-                .select(
-                    '_id nameAction description date createdBy'
-                )
                 .populate(
                     { path: 'user', select: '_id firstname lastname' }
                 )
@@ -68,23 +63,27 @@ class ActionController {
     }
 
     async updateAction(req, res, next) {
-        Action.findOneAndUpdate(
-            { _id: req.body._id },
-            {
-                $set: {
-                    nameAction: req.body.nameAction,
-                    description: req.body.description,
-                    date: req.body.date
+        Action.findOne({_id: req.body._id}, function(err, obj) {
+            Action.updateOne(
+                { 
+                    _id: req.body._id, 
                 },
-            },
-            { new: true, upsert: true }
-        ).exec((error, result) => {
-            console.log(error)
-            if (error) return res.status(400).json({ error })
-            if (result) {
-                res.status(201).json({ result })
-            }
-        })
+                {
+                    $set: {
+                        actionName: req.body.actionName,
+                        actionSlug: `${slugify(req.body.actionName)}-${shortid.generate()}`,
+                        createdTime: obj.createdTime,
+                        updatedTime: req.body.updatedTime,
+                        createdBy: obj.createdBy
+                    }
+                }
+            ).exec((error, action) => {
+                if (error) return res.status(400).json({ error })
+                if (action) {
+                    res.status(201).json({ action })
+                }
+            })
+        });
     }
 
     deleteActionById = (req, res) => {
@@ -106,7 +105,6 @@ class ActionController {
             limit: 99,
             lean: true,
         }
-        console.log(req.body)
         const searchModel = req.body
         const query = {}
         if (
@@ -114,14 +112,7 @@ class ActionController {
             Array.isArray(searchModel.ActionName) &&
             searchModel.ActionName.length > 0
         ) {
-            query.nameAction = { $in: searchModel.ActionName }
-        }
-        if (
-            !!searchModel.Description &&
-            Array.isArray(searchModel.Description) &&
-            searchModel.Description.length > 0
-        ) {
-            query.description = { $in: searchModel.Description }
+            query.actionName = { $in: searchModel.ActionName }
         }
         Action.paginate({ $and: [query] }, options).then(function (result) {
             return res.json({

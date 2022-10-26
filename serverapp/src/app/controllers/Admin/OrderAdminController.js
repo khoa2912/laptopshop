@@ -333,6 +333,15 @@ class OrderAdminController {
             query.paymentType = { $in: searchModel.Payment_Type }
         }
 
+        // const tempOrderStatus = query.orderStatus?.find(data => data.isCompleted === true);
+        if (
+            !!searchModel.Order_Status &&
+            Array.isArray(searchModel.Order_Status) &&
+            searchModel.Order_Status.length > 0
+        ) {
+            query.orderStatus = { $elemMatch: { type: searchModel.Order_Status, isCompleted : true}}
+        }
+
         // if (!!searchModel.UserId && searchModel.UserId.length > 0) {
         //     query.user._id = { $in: searchModel.UserId }
         // }
