@@ -38,6 +38,7 @@ router.post('/searchProduct', ProductController.searchProducts)
 router.post('/getDataFilter', ProductController.getDataFilter)
 router.post('/uploadPicture', ProductController.uploadPicture)
 router.post('/getProducts', ProductController.getProducts)
+router.post('/getProductRelated', ProductController.getProductRelated)
 router.get('/getAllProducts', ProductController.getAllProducts)
 // router.get('/productWarning', ProductController.productWarning)
 

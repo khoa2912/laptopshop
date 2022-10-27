@@ -253,6 +253,58 @@ class ProductController {
         });
     }
 
+    getProductRelated = async (req, res) => {
+        res.setHeader('Access-Control-Allow-Origin', '*')
+        res.setHeader('Access-Control-Allow-Headers', '*')
+        res.header('Access-Control-Allow-Credentials', true)
+
+        try {
+            const products = await Product.find({category: req.body.categoryId, _id : {$nin: [req.body.productId]}})
+                .populate({ path: 'tag' })
+                .populate({ path: 'category', select: '_id name' })
+                .exec()
+            myCache.set('allProducts', products)
+            res.status(200).json({ products })
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+    // getProductRelated = async (req, res, next) => {
+    //     const options = {
+    //         limit: 99,
+    //         lean: true,
+    //         populate: [
+    //             {
+    //                 path: 'category',
+    //                 select: '_id name',
+    //             },
+    //             {path: 'tag'}
+    //         ],
+    //     }
+    //     console.log(req.body)
+    //     const searchData = req.body
+    //     console.log(searchData)
+    //     const query = {}
+    //     const query1 = {}
+    //     if (
+    //         !!searchData.productId &&
+    //         Array.isArray(searchData.productId) &&
+    //         searchData.productId.length > 0 &&
+    //         !!searchData.categoryId &&
+    //         Array.isArray(searchData.categoryId) &&
+    //         searchData.categoryId.length > 0
+    //     ) {
+    //         query._id = { $nin: searchData.productId }
+    //         query1.category = { $in: searchData.categoryId }
+    //     }
+    //     Product.paginate({ $and: [query, query1] }, options).then(function (result) {
+    //         return res.json({
+    //             result,
+    //         })
+    //     })
+    // }
+
     getProductByTag(req, res, next) {
         const { tag } = req.params
         Tag.findOne({ tag: tag })
