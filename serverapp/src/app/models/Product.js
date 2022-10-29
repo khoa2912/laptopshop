@@ -30,21 +30,69 @@ const productSchema = new mongoose.Schema(
             {
                 baohanh: { type: String },
                 Series: { type: String },
-                color: {
-                    type: String,
-                },
-                cpu: {
-                    type: String,
-                },
+                color: [
+                    {
+                        colorId : {
+                            type: mongoose.Schema.Types.ObjectId,
+                            ref: 'infoProduct',
+                            required: true,
+                        },
+                        name: {
+                            type: String
+                        },
+                        type: {
+                            type: String
+                        }
+                    }
+                ],
+                cpu: [
+                    {
+                        cpuId : {
+                            type: mongoose.Schema.Types.ObjectId,
+                            ref: 'infoProduct',
+                            required: true,
+                        },
+                        name: {
+                            type: String
+                        },
+                        type: {
+                            type: String
+                        }
+                    }
+                ],
                 cardDohoa: {
                     type: String,
                 },
-                ram: {
-                    type: String,
-                },
-                manhinh: {
-                    type: String,
-                },
+                ram: [
+                    {
+                        ramId : {
+                            type: mongoose.Schema.Types.ObjectId,
+                            ref: 'infoProduct',
+                            required: true,
+                        },
+                        name: {
+                            type: String
+                        },
+                        type: {
+                            type: String
+                        }
+                    }
+                ],
+                manhinh: [
+                    {
+                        screenId : {
+                            type: mongoose.Schema.Types.ObjectId,
+                            ref: 'infoProduct',
+                            required: true,
+                        },
+                        name: {
+                            type: String
+                        },
+                        type: {
+                            type: String
+                        }
+                    }
+                ],
                 ocung: {
                     type: String,
                 },

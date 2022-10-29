@@ -16,6 +16,7 @@ const bannerRouter = require('./banner')
 const actionRouter = require('./action')
 const tagRouter = require('./tag')
 const roleactionRouter = require('./roleaction')
+const infoProductRouter = require('./infoProduct')
 
 function route(app) {
     app.use('/admin/order', orderAdminRouter)
@@ -36,6 +37,7 @@ function route(app) {
     app.use('/action', actionRouter)
     app.use('/tag', tagRouter)
     app.use('/roleaction', roleactionRouter)
+    app.use('/infoProduct', infoProductRouter)
 }
 
 module.exports = route

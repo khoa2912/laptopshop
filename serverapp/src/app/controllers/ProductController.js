@@ -125,15 +125,48 @@ class ProductController {
             })
         }
         
+        let cpu = [
+            {
+                cpuId: req.body.cpuId,
+                name: req.body.nameCpu,
+                type: req.body.typeCpu
+            }
+        ]
+
+        let color = [
+            {
+                colorId: req.body.colorId,
+                name: req.body.nameColor,
+                type: req.body.typeColor
+            }
+        ]
+
+        let ram = [
+            {
+                ramId: req.body.ramId,
+                name: req.body.nameRam,
+                type: req.body.typeRam
+            }
+        ]
+
+        let manhinh = [
+            {
+                screenId: req.body.screenId,
+                name: req.body.nameScreen,
+                type: req.body.typeScreen
+            }
+        ]
+
+
         let descriptionTable = [
             {
                 baohanh: req.body.timeBaoHanh,
                 Series: req.body.series,
-                color: req.body.color,
-                cpu: req.body.cpu,
+                color: color,
+                cpu: cpu,
                 cardDohoa: req.body.card,
-                ram: req.body.ram,
-                manhinh: req.body.manhinh,
+                ram: ram,
+                manhinh: manhinh,
                 ocung: req.body.ocung,
                 hedieuhanh: req.body.hedieuhanh,
                 khoiluong: req.body.khoiluong,
@@ -269,41 +302,6 @@ class ProductController {
             console.log(error)
         }
     }
-
-    // getProductRelated = async (req, res, next) => {
-    //     const options = {
-    //         limit: 99,
-    //         lean: true,
-    //         populate: [
-    //             {
-    //                 path: 'category',
-    //                 select: '_id name',
-    //             },
-    //             {path: 'tag'}
-    //         ],
-    //     }
-    //     console.log(req.body)
-    //     const searchData = req.body
-    //     console.log(searchData)
-    //     const query = {}
-    //     const query1 = {}
-    //     if (
-    //         !!searchData.productId &&
-    //         Array.isArray(searchData.productId) &&
-    //         searchData.productId.length > 0 &&
-    //         !!searchData.categoryId &&
-    //         Array.isArray(searchData.categoryId) &&
-    //         searchData.categoryId.length > 0
-    //     ) {
-    //         query._id = { $nin: searchData.productId }
-    //         query1.category = { $in: searchData.categoryId }
-    //     }
-    //     Product.paginate({ $and: [query, query1] }, options).then(function (result) {
-    //         return res.json({
-    //             result,
-    //         })
-    //     })
-    // }
 
     getProductByTag(req, res, next) {
         const { tag } = req.params
@@ -587,17 +585,30 @@ class ProductController {
             query._id = { $in: searchModel.ProductName }
         }
 
-        if (!!searchModel.Price) {
-            query.salePrice = { $in: searchModel.Price }
-        }
-
-        if (!!searchModel.CategoryId && searchModel.CategoryId.length > 0) {
+        if (
+            !!searchModel.CategoryId &&
+            Array.isArray(searchModel.CategoryId) &&
+            searchModel.CategoryId.length > 0
+        ) {
             query.category = { $in: searchModel.CategoryId }
         }
 
-        if (!!searchModel.Status && searchModel.Status.length > 0) {
-            query.Status = { $in: searchModel.Status }
+        if (
+            !!searchModel.Product_Tag &&
+            Array.isArray(searchModel.Product_Tag) &&
+            searchModel.Product_Tag.length > 0
+        ) {
+            query.tag = { $elemMatch: { $in: searchModel.Product_Tag}}
         }
+
+        // if (
+        //     !!searchModel.Ram &&
+        //     Array.isArray(searchModel.Ram) &&
+        //     searchModel.Ram.length > 0
+        // ) {
+        //     query.ram = { $elemMatch: { name: searchModel.Ram}}
+        // }
+
         Product.paginate({ $and: [query] }, options).then(function (result) {
             return res.json({
                 result,
