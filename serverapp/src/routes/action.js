@@ -7,15 +7,14 @@ const { requireSignin } = require('../middleware')
 router.post('/createAction', requireSignin, ActionController.createAction)
 router.post(`/getDataFilterAction`, requireSignin, ActionController.getDataFilterAction)
 router.post(`/getActions`, requireSignin, ActionController.getActions)
-router.post(`/getAllActions`, requireSignin, ActionController.getAllActions)
 router.post(
     '/updateAction',
-    // requireSignin,
+    requireSignin,
     ActionController.updateAction
 )
 router.delete(
     '/deleteActionById',
-    // requireSignin,
+    requireSignin,
     // adminMiddleware,
     ActionController.deleteActionById
 )

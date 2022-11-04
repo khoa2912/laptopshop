@@ -102,162 +102,167 @@ class OrderAdminController {
 
     updateOrderStatus = (req, res) => {
         // const ordStatus = Order.findById(req.body._id);
-        Order.findOne({_id: req.body._id}, function(err, obj) {
-            const index = obj?.orderStatus?.findIndex(item => item.type === req.body.type);
-            console.log(index);
-            if(index == 0) {
-                Order.updateOne(
-                    { 
-                        _id: req.body._id, 
-                    },
-                    {
-                        $set: {
-                            orderStatus: [
-                                {
-                                    type: 'ordered',
-                                    date: req.body.date,
-                                    isCompleted: true,
-                                },
-                                {
-                                    type: 'packed',
-                                    date: obj.orderStatus[1].date,
-                                    isCompleted: false,
-                                },
-                                {
-                                    type: 'shipped',
-                                    date: obj.orderStatus[2].date,
-                                    isCompleted: false,
-                                },
-                                {
-                                    type: 'delivered',
-                                    date: obj.orderStatus[3].date,
-                                    isCompleted: false,
-                                },
-                            ]
+        if(req.actions.includes('Cap-nhap-djon-hang')) {
+            Order.findOne({_id: req.body._id}, function(err, obj) {
+                const index = obj?.orderStatus?.findIndex(item => item.type === req.body.type);
+                console.log(index);
+                if(index == 0) {
+                    Order.updateOne(
+                        { 
+                            _id: req.body._id, 
+                        },
+                        {
+                            $set: {
+                                orderStatus: [
+                                    {
+                                        type: 'ordered',
+                                        date: req.body.date,
+                                        isCompleted: true,
+                                    },
+                                    {
+                                        type: 'packed',
+                                        date: obj.orderStatus[1].date,
+                                        isCompleted: false,
+                                    },
+                                    {
+                                        type: 'shipped',
+                                        date: obj.orderStatus[2].date,
+                                        isCompleted: false,
+                                    },
+                                    {
+                                        type: 'delivered',
+                                        date: obj.orderStatus[3].date,
+                                        isCompleted: false,
+                                    },
+                                ]
+                            }
                         }
-                    }
-                ).exec((error, order) => {
-                    if (error) return res.status(400).json({ error })
-                    if (order) {
-                        res.status(201).json({ order })
-                    }
-                })
-            } 
-            else if(index == 1) {
-                Order.updateOne(
-                    { 
-                        _id: req.body._id, 
-                    },
-                    {
-                        $set: {
-                            orderStatus: [
-                                {
-                                    type: 'ordered',
-                                    date: obj.orderStatus[0].date,
-                                    isCompleted: false,
-                                },
-                                {
-                                    type: 'packed',
-                                    date: req.body.date,
-                                    isCompleted: true,
-                                },
-                                {
-                                    type: 'shipped',
-                                    date: obj.orderStatus[2].date,
-                                    isCompleted: false,
-                                },
-                                {
-                                    type: 'delivered',
-                                    date: obj.orderStatus[3].date,
-                                    isCompleted: false,
-                                },
-                            ]
+                    ).exec((error, order) => {
+                        if (error) return res.status(400).json({ error })
+                        if (order) {
+                            res.status(201).json({ order })
                         }
-                    }
-                ).exec((error, order) => {
-                    if (error) return res.status(400).json({ error })
-                    if (order) {
-                        res.status(201).json({ order })
-                    }
-                })
-            }
-            else if(index == 2) {
-                Order.updateOne(
-                    { 
-                        _id: req.body._id, 
-                    },
-                    {
-                        $set: {
-                            orderStatus: [
-                                {
-                                    type: 'ordered',
-                                    date: obj.orderStatus[0].date,
-                                    isCompleted: false,
-                                },
-                                {
-                                    type: 'packed',
-                                    date: obj.orderStatus[1].date,
-                                    isCompleted: false,
-                                },
-                                {
-                                    type: 'shipped',
-                                    date: req.body.date,
-                                    isCompleted: true,
-                                },
-                                {
-                                    type: 'delivered',
-                                    date: obj.orderStatus[3].date,
-                                    isCompleted: false,
-                                },
-                            ]
+                    })
+                } 
+                else if(index == 1) {
+                    Order.updateOne(
+                        { 
+                            _id: req.body._id, 
+                        },
+                        {
+                            $set: {
+                                orderStatus: [
+                                    {
+                                        type: 'ordered',
+                                        date: obj.orderStatus[0].date,
+                                        isCompleted: false,
+                                    },
+                                    {
+                                        type: 'packed',
+                                        date: req.body.date,
+                                        isCompleted: true,
+                                    },
+                                    {
+                                        type: 'shipped',
+                                        date: obj.orderStatus[2].date,
+                                        isCompleted: false,
+                                    },
+                                    {
+                                        type: 'delivered',
+                                        date: obj.orderStatus[3].date,
+                                        isCompleted: false,
+                                    },
+                                ]
+                            }
                         }
-                    }
-                ).exec((error, order) => {
-                    if (error) return res.status(400).json({ error })
-                    if (order) {
-                        res.status(201).json({ order })
-                    }
-                })
-            }
-            else {
-                Order.updateOne(
-                    { 
-                        _id: req.body._id, 
-                    },
-                    {
-                        $set: {
-                            orderStatus: [
-                                {
-                                    type: 'ordered',
-                                    date: obj.orderStatus[0].date,
-                                    isCompleted: false,
-                                },
-                                {
-                                    type: 'packed',
-                                    date: obj.orderStatus[1].date,
-                                    isCompleted: false,
-                                },
-                                {
-                                    type: 'shipped',
-                                    date: obj.orderStatus[2].date,
-                                    isCompleted: false,
-                                },
-                                {
-                                    type: 'delivered',
-                                    date: req.body.date,
-                                    isCompleted: true,
-                                },
-                            ]
+                    ).exec((error, order) => {
+                        if (error) return res.status(400).json({ error })
+                        if (order) {
+                            res.status(201).json({ order })
                         }
-                    }
-                ).exec((error, order) => {
-                    if (error) return res.status(400).json({ error })
-                    if (order) {
-                        res.status(201).json({ order })
-                    }
-                })
-            }
-        });
+                    })
+                }
+                else if(index == 2) {
+                    Order.updateOne(
+                        { 
+                            _id: req.body._id, 
+                        },
+                        {
+                            $set: {
+                                orderStatus: [
+                                    {
+                                        type: 'ordered',
+                                        date: obj.orderStatus[0].date,
+                                        isCompleted: false,
+                                    },
+                                    {
+                                        type: 'packed',
+                                        date: obj.orderStatus[1].date,
+                                        isCompleted: false,
+                                    },
+                                    {
+                                        type: 'shipped',
+                                        date: req.body.date,
+                                        isCompleted: true,
+                                    },
+                                    {
+                                        type: 'delivered',
+                                        date: obj.orderStatus[3].date,
+                                        isCompleted: false,
+                                    },
+                                ]
+                            }
+                        }
+                    ).exec((error, order) => {
+                        if (error) return res.status(400).json({ error })
+                        if (order) {
+                            res.status(201).json({ order })
+                        }
+                    })
+                }
+                else {
+                    Order.updateOne(
+                        { 
+                            _id: req.body._id, 
+                        },
+                        {
+                            $set: {
+                                orderStatus: [
+                                    {
+                                        type: 'ordered',
+                                        date: obj.orderStatus[0].date,
+                                        isCompleted: false,
+                                    },
+                                    {
+                                        type: 'packed',
+                                        date: obj.orderStatus[1].date,
+                                        isCompleted: false,
+                                    },
+                                    {
+                                        type: 'shipped',
+                                        date: obj.orderStatus[2].date,
+                                        isCompleted: false,
+                                    },
+                                    {
+                                        type: 'delivered',
+                                        date: req.body.date,
+                                        isCompleted: true,
+                                    },
+                                ]
+                            }
+                        }
+                    ).exec((error, order) => {
+                        if (error) return res.status(400).json({ error })
+                        if (order) {
+                            res.status(201).json({ order })
+                        }
+                    })
+                }
+            });
+        } 
+        else {
+            return res.status(403).send('Khongduquyen');
+        }
     }
 
     getCustomerOrders = async (req, res) => {

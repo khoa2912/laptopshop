@@ -118,79 +118,86 @@ function generateSortOptions(sortFields, sortAscending = true) {
 }
 class ProductController {
     async create(req, res, next) {
-        var productPicture = []
-        if (req.body.productPicture.length > 0) {
-            productPicture = await req.body.productPicture.map((item) => {
-                return { img: item }
+        if(req.actions.includes('Them-san-pham')) {
+            var productPicture = []
+            if (req.body.productPicture.length > 0) {
+                productPicture = await req.body.productPicture.map((item) => {
+                    return { img: item }
+                })
+            }
+            
+            let cpu = [
+                {
+                    cpuId: req.body.cpuId,
+                    name: req.body.nameCpu,
+                    type: req.body.typeCpu
+                }
+            ]
+
+            let color = [
+                {
+                    colorId: req.body.colorId,
+                    name: req.body.nameColor,
+                    type: req.body.typeColor
+                }
+            ]
+
+            let ram = [
+                {
+                    ramId: req.body.ramId,
+                    name: req.body.nameRam,
+                    type: req.body.typeRam
+                }
+            ]
+
+            let manhinh = [
+                {
+                    screenId: req.body.screenId,
+                    name: req.body.nameScreen,
+                    type: req.body.typeScreen
+                }
+            ]
+
+
+            let descriptionTable = [
+                {
+                    baohanh: req.body.timeBaoHanh,
+                    Series: req.body.series,
+                    color: color,
+                    cpu: cpu,
+                    cardDohoa: req.body.card,
+                    ram: ram,
+                    manhinh: manhinh,
+                    ocung: req.body.ocung,
+                    hedieuhanh: req.body.hedieuhanh,
+                    khoiluong: req.body.khoiluong,
+                },
+            ]
+            const product = new Product({
+                name: req.body.name,
+                slug: slugify(req.body.name),
+                regularPrice: req.body.regularPrice,
+                salePrice: req.body.salePrice,
+                quantity: req.body.quantity,
+                description: req.body.description,
+                descriptionTable: descriptionTable,
+                productPicture,
+                tag: req.body.listTag,
+                category: req.body.categoryId,
+                createdBy: req.user.id,
+            })
+            product.save((error, product) => {
+                if (error) return res.status(400).json({ error })
+                if (product) {
+                    res.status(201).json({ product })
+                }
             })
         }
-        
-        let cpu = [
-            {
-                cpuId: req.body.cpuId,
-                name: req.body.nameCpu,
-                type: req.body.typeCpu
-            }
-        ]
-
-        let color = [
-            {
-                colorId: req.body.colorId,
-                name: req.body.nameColor,
-                type: req.body.typeColor
-            }
-        ]
-
-        let ram = [
-            {
-                ramId: req.body.ramId,
-                name: req.body.nameRam,
-                type: req.body.typeRam
-            }
-        ]
-
-        let manhinh = [
-            {
-                screenId: req.body.screenId,
-                name: req.body.nameScreen,
-                type: req.body.typeScreen
-            }
-        ]
-
-
-        let descriptionTable = [
-            {
-                baohanh: req.body.timeBaoHanh,
-                Series: req.body.series,
-                color: color,
-                cpu: cpu,
-                cardDohoa: req.body.card,
-                ram: ram,
-                manhinh: manhinh,
-                ocung: req.body.ocung,
-                hedieuhanh: req.body.hedieuhanh,
-                khoiluong: req.body.khoiluong,
-            },
-        ]
-        const product = new Product({
-            name: req.body.name,
-            slug: slugify(req.body.name),
-            regularPrice: req.body.regularPrice,
-            salePrice: req.body.salePrice,
-            quantity: req.body.quantity,
-            description: req.body.description,
-            descriptionTable: descriptionTable,
-            productPicture,
-            tag: req.body.listTag,
-            category: req.body.categoryId,
-            createdBy: req.user.id,
-        })
-        product.save((error, product) => {
-            if (error) return res.status(400).json({ error })
-            if (product) {
-                res.status(201).json({ product })
-            }
-        })
+        else {
+            // console.log('Khong du quyen')
+            return res.status(403).send('Khongduquyen');
+            
+        }
     }
 
     // async updateProduct(req, res, next) {
@@ -239,13 +246,6 @@ class ProductController {
     // }
 
     updateProduct = (req, res) => {
-        // const ordStatus = Order.findById(req.body._id);
-        // var productPicture = []
-        // if (req.body.productPicture.length > 0) {
-        //     productPicture = req.files.map((file) => {
-        //         return { img: file.filename }
-        //     })
-        // }
         let descriptionTable = [
             {
                 baohanh: req.body.timeBaoHanh,
@@ -387,16 +387,22 @@ class ProductController {
         }
     }
     deleteProductById = (req, res) => {
-        const { productId } = req.body.payload
-        if (productId) {
-            Product.deleteMany({ _id: productId }).exec((error, result) => {
-                if (error) return res.status(400).json({ error })
-                if (result) {
-                    res.status(202).json({ result })
-                }
-            })
-        } else {
-            res.status(400).json({ error: 'Params required' })
+        console.log(req.actions)
+        if(req.actions.includes('Xoa-san-pham')) {
+            const { productId } = req.body.payload
+            if (productId) {
+                Product.deleteMany({ _id: productId }).exec((error, result) => {
+                    if (error) return res.status(400).json({ error })
+                    if (result) {
+                        res.status(202).json({ result })
+                    }
+                })
+            } else {
+                res.status(400).json({ error: 'Params required' })
+            }
+        } 
+        else {
+            return res.status(403).send('Khongduquyen');
         }
     }
 
@@ -410,29 +416,9 @@ class ProductController {
                 .populate({ path: 'tag' })
                 .populate({ path: 'category', select: '_id name' })
                 .exec()
-            myCache.set('allProducts', products)
             res.status(200).json({ products })
         } catch (error) {
             console.log(error)
-        }
-    }
-    async getAllProducts(req, res, next) {
-        res.setHeader('Access-Control-Allow-Origin', '*')
-        res.setHeader('Access-Control-Allow-Headers', '*')
-        res.header('Access-Control-Allow-Credentials', true)
-        if (myCache.has('allProducts')) {
-            res.status(200).json({ allProducts: myCache.get('allProducts') })
-        } else {
-            const allProducts = await Product.find({})
-            .populate({
-                path: 'category',
-                select: '_id name',
-            })
-            .populate({path: 'tag'})
-            if (allProducts) {
-                myCache.set('allProducts', allProducts)
-                res.status(200).json({ allProducts })
-            }
         }
     }
     uploadPicture = async (req, res, next) => {

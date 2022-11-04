@@ -4,6 +4,7 @@ const jwt = require('jsonwebtoken')
 const bcrypt = require('bcrypt')
 const shortid = require('shortid')
 const User = require('../../models/User')
+const Role = require('../../models/Role')
 const NodeCache = require('node-cache')
 const myCache = new NodeCache({ stdTTL: 100, checkperiod: 120 })
 
@@ -35,55 +36,63 @@ function generateSortOptions(sortFields, sortAscending = true) {
 
 class AuthController {
     async createUser(req, res, next) {
-        const { firstName, lastName, email, hash_password, role, contactNumber, profilePicture, status } = req.body
-        console.log(req.body)
-
-        const password = await bcrypt.hash(hash_password, 10)
-
-        const user = new User ({
-            firstName,
-            lastName,
-            userName:email,
-            email,
-            hash_password:password,
-            role,
-            contactNumber,
-            profilePicture,
-            status,
-            createdBy: req.user.id,
-        })
-        // eslint-disable-next-line consistent-return
-        user.save((error, user) => {
-            if (error) return res.status(400).json({ error })
-            if (user) {
-                res.status(201).json({ user })
-            }
-        })
+        if(req.actions.includes('Them-tai-khoan')) {
+            const { firstName, lastName, email, hash_password, roleId, contactNumber, profilePicture, status } = req.body
+            const password = await bcrypt.hash(hash_password, 10)
+            const user = new User ({
+                firstName,
+                lastName,
+                userName:email,
+                email,
+                hash_password:password,
+                role: roleId,
+                contactNumber,
+                profilePicture,
+                status,
+                createdBy: req.user.id,
+            })
+            // eslint-disable-next-line consistent-return
+            user.save((error, user) => {
+                if (error) return res.status(400).json({ error })
+                if (user) {
+                    res.status(201).json({ user })
+                }
+            })
+        } 
+        else {
+            return res.status(403).send('Khongduquyen');
+        }
     }
 
     async updateUser(req, res, next) {
-        const password = await bcrypt.hash(req.body.hash_password, 10)
-        User.findOneAndUpdate(
-            { _id: req.body._id },
-            {
-                $set: {
-                    firstName: req.body.firstName,
-                    lastName: req.body.lastName,
-                    hash_password: password,
-                    role: req.body.role,
-                    contactNumber: req.body.contactNumber,
-                    profilePicture: req.body.profilePicture,
-                    status: req.body.status,
+        if(req.actions.includes('Chinh-sua-tai-khoan')) {
+            const password = await bcrypt.hash(req.body.hash_password, 10)
+            User.findOneAndUpdate(
+                { _id: req.body._id },
+                {
+                    $set: {
+                        firstName: req.body.firstName,
+                        lastName: req.body.lastName,
+                        hash_password: password,
+                        role: req.body.role,
+                        contactNumber: req.body.contactNumber,
+                        profilePicture: req.body.profilePicture,
+                        status: req.body.status,
+                    },
                 },
-            },
-            { new: true, upsert: true }
-        ).exec((error, user) => {
-            console.log(error)
-            if (error) return res.status(400).json({ error })
-            if (user) {
-                res.status(201).json({ user })
-            }
-        })
+                { new: true, upsert: true }
+            ).exec((error, user) => {
+                console.log(error)
+                if (error) return res.status(400).json({ error })
+                if (user) {
+                    res.status(201).json({ user })
+                }
+            })
+        } 
+        else {
+            return res.status(403).send('Khongduquyen');
+        }
+        
     }
 
     // [POST] /buyer/signup
@@ -130,10 +139,10 @@ class AuthController {
             if (error) return res.status(400).json({ error })
             if (user) {
                 const isPassword = user.authenticate(req.body.password)
+                let testRole = await Role.find({ _id: user.role })
                 if (
-                    isPassword &&
-                    (user.role === 'admin' || user.role === 'super-admin')
-                ) {
+                    isPassword && (testRole[0].nameRole !== 'Khách hàng')
+                ) {                    
                     const refresh_token = createRefreshToken({
                         id: user._id,
                         role: user.role,
@@ -213,41 +222,28 @@ class AuthController {
         try {
             const users = await User.find({})
                 .exec()
-            myCache.set('allUsers', users)
             res.status(200).json({ users })
         } catch (error) {
             console.log(error)
         }
     }
 
-    async getAllUsers(req, res, next) {
-        res.setHeader('Access-Control-Allow-Origin', '*')
-        res.setHeader('Access-Control-Allow-Headers', '*')
-        res.header('Access-Control-Allow-Credentials', true)
-        if (myCache.has('allUsers')) {
-            res.status(200).json({ allUsers: myCache.get('allUsers') })
-        } else {
-            const allUsers = await User.find({}).populate(
-                
-            )
-            if (allUsers) {
-                myCache.set('allUsers', allUsers)
-                res.status(200).json({ allUsers })
-            }
-        }
-    }
-
     deleteAccountById = (req, res) => {
-        const { userId } = req.body.payload
-        if (userId) {
-            User.deleteMany({ _id: userId }).exec((error, result) => {
-                if (error) return res.status(400).json({ error })
-                if (result) {
-                    res.status(202).json({ result })
-                }
-            })
-        } else {
-            res.status(400).json({ error: 'Params required' })
+        if(req.actions.includes('Xoa-tai-khoan')) {
+            const { userId } = req.body.payload
+            if (userId) {
+                User.deleteMany({ _id: userId }).exec((error, result) => {
+                    if (error) return res.status(400).json({ error })
+                    if (result) {
+                        res.status(202).json({ result })
+                    }
+                })
+            } else {
+                res.status(400).json({ error: 'Params required' })
+            }
+        } 
+        else {
+            return res.status(403).send('Khongduquyen');
         }
     }
 

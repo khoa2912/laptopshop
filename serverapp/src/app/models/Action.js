@@ -5,13 +5,14 @@ const actionSchema = new mongoose.Schema(
         actionName: {
             type: String,
             required: true,
-            // unique: true,
+            unique: true,
             trim: true,
         },
         actionSlug: {
             type: String,
             required: true,
             unique: true,
+            trim: true,
         },
         createdTime: {
             type: Date,

@@ -9,6 +9,8 @@ const router = express.Router()
 // router.post('/signin',(req,res,next)=>{
 // })
 
-router.post('/initialData', requireSignin, adminMiddleware, initialData)
+router.post('/initialData', requireSignin, 
+// adminMiddleware, 
+initialData)
 
 module.exports = router

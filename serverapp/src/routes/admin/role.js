@@ -7,18 +7,16 @@ const {
 } = require('../../middleware')
 router.delete(
     '/deleteRoleById',
-    // requireSignin,
+    requireSignin,
     // adminMiddleware,
     RoleController.deleteRoleById
 )
 router.post(
     '/updateRole',
-    // requireSignin,
+    requireSignin,
     RoleController.updateRole
 )
-router.post('/create', requireSignin, adminMiddleware, RoleController.create)
-router.post('/getRoles', requireSignin, adminMiddleware, RoleController.getRoles)
-router.post('/getAllRoles', requireSignin, adminMiddleware, RoleController.getAllRoles)
-router.post('/getDataFilterRole', requireSignin, adminMiddleware, RoleController.getDataFilterRole)
-router.get('/permission', requireSignin, RoleController.permissionRole)
+router.post('/create', requireSignin, RoleController.create)
+router.post('/getRoles', requireSignin, RoleController.getRoles)
+router.post('/getDataFilterRole', requireSignin, RoleController.getDataFilterRole)
 module.exports = router

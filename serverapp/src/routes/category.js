@@ -21,7 +21,7 @@ const upload = multer({ storage })
 router.post(
     '/create',
     requireSignin,
-    adminMiddleware,
+    // adminMiddleware,
     upload.single('categoryImage'),
     CategoryController.create
 )
@@ -30,7 +30,8 @@ router.post('/getDataFilter', CategoryController.getDataFilter)
 router.post(
     '/update',
     upload.array('categoryImage'),
+    requireSignin,
     CategoryController.updateCategories
 )
-router.post('/delete', CategoryController.deleteCategories)
+router.post('/delete', requireSignin, CategoryController.deleteCategories)
 module.exports = router

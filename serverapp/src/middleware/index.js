@@ -2,6 +2,7 @@ const jwt = require('jsonwebtoken')
 const multer = require('multer')
 const shortid = require('shortid')
 const path = require('path')
+const RoleAction = require('../app/models/RoleAction')
 
 const storage = multer.diskStorage({
     destination(req, file, cb) {
@@ -16,11 +17,15 @@ exports.upload = multer({
     storage,
 })
 
-exports.requireSignin = (req, res, next) => {
+exports.requireSignin = async(req, res, next) => {
     try {
         if (req.headers.authorization) {
             const token = req.headers.authorization.split(' ')[1]
             const user = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET)
+            let actions = await RoleAction.findOne({ roleId: user.role }).populate('listAction')
+            req.actions = actions.listAction.map(x => x.actionSlug);
+
+            
             req.user = user
             return next()
         }

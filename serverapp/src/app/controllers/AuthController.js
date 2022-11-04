@@ -1,4 +1,5 @@
 const Users = require('../models/User')
+const Role = require('../models/Role')
 const { mongooseToObject } = require('../../util/mongoose')
 const jwt = require('jsonwebtoken')
 const { validationResult, Result } = require('express-validator')
@@ -63,8 +64,8 @@ class UserController {
                             req.body.password,
                             user.hash_password
                         )
-
-                        if (validPassword && user.role === 'user') {
+                        let testRole = await Role.find({ _id: user.role })
+                        if (validPassword && testRole[0].nameRole === 'Khách hàng') {
                             const refresh_token = createRefreshToken({
                                 id: user._id,
                                 role: user.role,

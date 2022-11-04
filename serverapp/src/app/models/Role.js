@@ -8,29 +8,13 @@ const roleSchema = new mongoose.Schema(
             unique: true,
             trim: true,
         },
-        codeRole: {
+        description: {
             type: String,
-            required: true,
-            unique: true,
         },
-        permission: [String],
-        descriptionRole: {
-            type: String,
-            trim: true,
-        },
-        listRole: [
-            {
-                actionId: { 
-                    type: mongoose.Schema.Types.ObjectId, 
-                    ref: 'Action', 
-                    required: true, 
-                },
-            },
-        ],
-        status: {
-            type: String,
-            default: 'active',
-        },
+        createdTime: {
+            type: Date,
+            default: Date.now()
+        },    
         createdBy: {
             type: mongoose.Schema.Types.ObjectId,
             ref: 'User',

@@ -7,15 +7,14 @@ const { requireSignin } = require('../middleware')
 router.post('/createTag', requireSignin, TagController.createTag)
 router.post(`/getDataFilterTag`, requireSignin, TagController.getDataFilterTag)
 router.post(`/getTags`, requireSignin, TagController.getTags)
-router.post(`/getAllTags`, requireSignin, TagController.getAllTags)
 router.post(
     '/updateTag',
-    // requireSignin,
+    requireSignin,
     TagController.updateTag
 )
 router.delete(
     '/deleteTagById',
-    // requireSignin,
+    requireSignin,
     // adminMiddleware,
     TagController.deleteTagById
 )

@@ -22,14 +22,14 @@ const upload = multer({ storage })
 router.post(
     '/create',
     requireSignin,
-    adminMiddleware,
+    // adminMiddleware,
     // upload.array('productPicture'),
     ProductController.create
 )
 router.post(
     '/update',
     requireSignin,
-    adminMiddleware,
+    // adminMiddleware,
     upload.array('productPicture'),
     ProductController.updateProduct
 )
@@ -39,12 +39,11 @@ router.post('/getDataFilter', ProductController.getDataFilter)
 router.post('/uploadPicture', ProductController.uploadPicture)
 router.post('/getProducts', ProductController.getProducts)
 router.post('/getProductRelated', ProductController.getProductRelated)
-router.get('/getAllProducts', ProductController.getAllProducts)
 // router.get('/productWarning', ProductController.productWarning)
 
 router.delete(
     '/deleteProductById',
-    // requireSignin,
+    requireSignin,
     // adminMiddleware,
     ProductController.deleteProductById
 )

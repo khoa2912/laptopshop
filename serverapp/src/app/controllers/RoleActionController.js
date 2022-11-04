@@ -13,22 +13,25 @@ const myCache = new NodeCache({ stdTTL: 100, checkperiod: 120 })
 // eslint-disable-next-line no-var
 class RoleActionController {
     async createRoleAction(req, res, next) {
-        console.log(req.body)
-
-        const roleaction = new RoleAction({
-            roleId: req.body.roleId,
-            listAction: req.body.listAction,
-            createdTime: Date.now(),
-            updatedTime: Date.now(),
-            createdBy: req.user.id,
-        })
-        // eslint-disable-next-line consistent-return
-        roleaction.save((error, roleaction) => {
-            if (error) return res.status(400).json({ error })
-            if (roleaction) {
-                res.status(201).json({ roleaction })
-            }
-        })
+        if(req.actions.includes('Them-Role-Action')) {
+            const roleaction = new RoleAction({
+                roleId: req.body.roleId,
+                listAction: req.body.listAction,
+                createdTime: Date.now(),
+                updatedTime: Date.now(),
+                createdBy: req.user.id,
+            })
+            // eslint-disable-next-line consistent-return
+            roleaction.save((error, roleaction) => {
+                if (error) return res.status(400).json({ error })
+                if (roleaction) {
+                    res.status(201).json({ roleaction })
+                }
+            })
+        } 
+        else {
+            return res.status(403).send('Khongduquyen');
+        }
     }
 
     getRoleActions = async (req, res) => {
@@ -42,66 +45,57 @@ class RoleActionController {
                 .populate({ path: 'action', select: '_id nameAction' })
                 .populate({ path: 'user', select: '_id firstname lastname' })
                 .exec()
-            myCache.set('allRoleActions', roleactions)
             res.status(200).json({ roleactions })
         } catch (error) {
             console.log(error)
         }
     }
 
-    async getAllRoleActions(req, res, next) {
-        res.setHeader('Access-Control-Allow-Origin', '*')
-        res.setHeader('Access-Control-Allow-Headers', '*')
-        res.header('Access-Control-Allow-Credentials', true)
-        if (myCache.has('allRoleActions')) {
-            res.status(200).json({ allRoleActions: myCache.get('allRoleActions') })
-        } else {
-            const allRoleActions = await RoleAction.find({})
-            .populate({ path: 'role', select: '_id nameRole' })
-            .populate({ path: 'action', select: '_id nameAction' })
-            .populate({ path: 'user', select: '_id firstname lastname' })
-            if (allRoleActions) {
-                myCache.set('allRoleActions', allRoleActions)
-                res.status(200).json({ allRoleActions })
-            }
+    async updateRoleAction(req, res, next) {
+        if(req.actions.includes('Chinh-sua-Role-Action')) {
+            RoleAction.findOne({_id: req.body._id}, function(err, obj) {
+                RoleAction.updateOne(
+                    { 
+                        _id: req.body._id, 
+                    },
+                    {
+                        $set: {
+                            roleId: req.body.roleId,
+                            listAction: req.body.listAction,
+                            createdTime: obj.createdTime,
+                            updatedTime: req.body.updatedTime,
+                            createdBy: obj.createdBy,
+                        }
+                    }
+                ).exec((error, roleaction) => {
+                    if (error) return res.status(400).json({ error })
+                    if (roleaction) {
+                        res.status(201).json({ roleaction })
+                    }
+                })
+            });
+        } 
+        else {
+            return res.status(403).send('Khongduquyen');
         }
     }
 
-    async updateRoleAction(req, res, next) {
-        RoleAction.findOne({_id: req.body._id}, function(err, obj) {
-            RoleAction.updateOne(
-                { 
-                    _id: req.body._id, 
-                },
-                {
-                    $set: {
-                        roleId: req.body.roleId,
-                        listAction: req.body.listAction,
-                        createdTime: obj.createdTime,
-                        updatedTime: req.body.updatedTime,
-                        createdBy: obj.createdBy,
-                    }
-                }
-            ).exec((error, roleaction) => {
-                if (error) return res.status(400).json({ error })
-                if (roleaction) {
-                    res.status(201).json({ roleaction })
-                }
-            })
-        });
-    }
-
     deleteRoleActionById = (req, res) => {
-        const { roleactionId } = req.body.payload
-        if (roleactionId) {
-            RoleAction.deleteMany({ _id: roleactionId }).exec((error, result) => {
-                if (error) return res.status(400).json({ error })
-                if (result) {
-                    res.status(202).json({ result })
-                }
-            })
-        } else {
-            res.status(400).json({ error: 'Params required' })
+        if(req.actions.includes('Xoa-Role-Action')) {
+            const { roleactionId } = req.body.payload
+            if (roleactionId) {
+                RoleAction.deleteMany({ _id: roleactionId }).exec((error, result) => {
+                    if (error) return res.status(400).json({ error })
+                    if (result) {
+                        res.status(202).json({ result })
+                    }
+                })
+            } else {
+                res.status(400).json({ error: 'Params required' })
+            }
+        } 
+        else {
+            return res.status(403).send('Khongduquyen');
         }
     }
 

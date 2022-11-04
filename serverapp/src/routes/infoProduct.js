@@ -9,12 +9,12 @@ router.post(`/getDataFilterInfoProduct`, requireSignin, InfoProductController.ge
 router.post(`/getInfoProducts`, requireSignin, InfoProductController.getInfoProducts)
 router.post(
     '/updateInfoProduct',
-    // requireSignin,
+    requireSignin,
     InfoProductController.updateInfoProduct
 )
 router.delete(
     '/deleteInfoProductById',
-    // requireSignin,
+    requireSignin,
     // adminMiddleware,
     InfoProductController.deleteInfoProductById
 )

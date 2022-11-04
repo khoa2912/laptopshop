@@ -27,20 +27,19 @@ router.post(
 )
 router.delete(
     '/deleteAccountById',
-    // requireSignin,
+    requireSignin,
     // adminMiddleware,
     AdminAuthController.deleteAccountById
 )
 router.post(
     '/updateUser',
-    // requireSignin,
+    requireSignin,
     AdminAuthController.updateUser
 )
 router.post('/refresh_token', AdminAuthController.getAccessToken)
 router.get('/infor', requireSignin, AdminAuthController.getUserInfor)
 router.post('/setstatus', AdminAuthController.setStatusUser)
 router.post('/getUsers', AdminAuthController.getUsers)
-router.post('/getAllUsers', AdminAuthController.getAllUsers)
 router.post('/createUser', requireSignin, AdminAuthController.createUser)
 router.post('/getDataFilterUser', AdminAuthController.getDataFilterUser)
 router.post('/signout', requireSignin, AdminAuthController.signout)

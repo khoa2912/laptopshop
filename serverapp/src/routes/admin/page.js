@@ -8,28 +8,28 @@ router.get('/:category/:type', PageController.getPage)
 router.post(
     '/create',
     requireSignin,
-    adminMiddleware,
+    // adminMiddleware,
     upload.fields([{ name: 'banners' }, { name: 'products' }]),
     PageController.createPage
 )
 router.post(
     `/getPages`,
     requireSignin,
-    adminMiddleware,
+    // adminMiddleware,
     PageController.getPages
 )
 
 router.post(
     `/getAllPages`,
     requireSignin,
-    adminMiddleware,
+    // adminMiddleware,
     PageController.getAllPages
 )
 
 router.post(
     `/getDataFilterPage`,
     requireSignin,
-    adminMiddleware,
+    // adminMiddleware,
     PageController.getDataFilterPage
 )
 

@@ -10,21 +10,26 @@ const myCache = new NodeCache({ stdTTL: 100, checkperiod: 120 })
 // eslint-disable-next-line no-var
 class ActionController {
     async createAction(req, res, next) {
-        const action = new Action({
-            actionName: req.body.actionName,
-            actionSlug: `${slugify(req.body.actionName)}-${shortid.generate()}`,
-            createdTime: Date.now(),
-            updatedTime: Date.now(),
-            createdBy: req.user.id,
-        })
-        console.log(action)
-        // eslint-disable-next-line consistent-return
-        action.save((error, result) => {
-            if (error) return res.status(400).json({ error })
-            if (result) {
-                res.status(201).json({ result })
-            }
-        })
+        if(req.actions.includes('Them-Action')) {
+            const action = new Action({
+                actionName: req.body.actionName,
+                actionSlug: `${slugify(req.body.actionName)}`,
+                createdTime: Date.now(),
+                updatedTime: Date.now(),
+                createdBy: req.user.id,
+            })
+            console.log(action)
+            // eslint-disable-next-line consistent-return
+            action.save((error, result) => {
+                if (error) return res.status(400).json({ error })
+                if (result) {
+                    res.status(201).json({ result })
+                }
+            })
+        } 
+        else {
+            return res.status(403).send('Khongduquyen');
+        }
     }
 
     getActions = async (req, res) => {
@@ -38,65 +43,57 @@ class ActionController {
                     { path: 'user', select: '_id firstname lastname' }
                 )
                 .exec()
-            myCache.set('allActions', actions)
             res.status(200).json({ actions })
         } catch (error) {
             console.log(error)
         }
     }
 
-    async getAllActions(req, res, next) {
-        res.setHeader('Access-Control-Allow-Origin', '*')
-        res.setHeader('Access-Control-Allow-Headers', '*')
-        res.header('Access-Control-Allow-Credentials', true)
-        if (myCache.has('allActions')) {
-            res.status(200).json({ allActions: myCache.get('allActions') })
-        } else {
-            const allActions = await Action.find({}).populate(
-                { path: 'user', select: '_id firstname lastname' }
-            )
-            if (allActions) {
-                myCache.set('allActions', allActions)
-                res.status(200).json({ allActions })
-            }
+    async updateAction(req, res, next) {
+        if(req.actions.includes('Chinh-sua-Action')) {
+            Action.findOne({_id: req.body._id}, function(err, obj) {
+                Action.updateOne(
+                    { 
+                        _id: req.body._id, 
+                    },
+                    {
+                        $set: {
+                            actionName: req.body.actionName,
+                            actionSlug: `${slugify(req.body.actionName)}`,
+                            createdTime: obj.createdTime,
+                            updatedTime: req.body.updatedTime,
+                            createdBy: obj.createdBy
+                        }
+                    }
+                ).exec((error, action) => {
+                    if (error) return res.status(400).json({ error })
+                    if (action) {
+                        res.status(201).json({ action })
+                    }
+                })
+            });
+        } 
+        else {
+            return res.status(403).send('Khongduquyen');
         }
     }
 
-    async updateAction(req, res, next) {
-        Action.findOne({_id: req.body._id}, function(err, obj) {
-            Action.updateOne(
-                { 
-                    _id: req.body._id, 
-                },
-                {
-                    $set: {
-                        actionName: req.body.actionName,
-                        actionSlug: `${slugify(req.body.actionName)}-${shortid.generate()}`,
-                        createdTime: obj.createdTime,
-                        updatedTime: req.body.updatedTime,
-                        createdBy: obj.createdBy
-                    }
-                }
-            ).exec((error, action) => {
-                if (error) return res.status(400).json({ error })
-                if (action) {
-                    res.status(201).json({ action })
-                }
-            })
-        });
-    }
-
     deleteActionById = (req, res) => {
-        const { actionId } = req.body.payload
-        if (actionId) {
-            Action.deleteMany({ _id: actionId }).exec((error, result) => {
-                if (error) return res.status(400).json({ error })
-                if (result) {
-                    res.status(202).json({ result })
-                }
-            })
-        } else {
-            res.status(400).json({ error: 'Params required' })
+        if(req.actions.includes('Xoa-Action')) {
+            const { actionId } = req.body.payload
+            if (actionId) {
+                Action.deleteMany({ _id: actionId }).exec((error, result) => {
+                    if (error) return res.status(400).json({ error })
+                    if (result) {
+                        res.status(202).json({ result })
+                    }
+                })
+            } else {
+                res.status(400).json({ error: 'Params required' })
+            }
+        } 
+        else {
+            return res.status(403).send('Khongduquyen');
         }
     }
 

@@ -7,52 +7,52 @@ const router = express.Router()
 router.post(
     '/updateOrderStatus',
     requireSignin,
-    adminMiddleware,
+    // adminMiddleware,
     OrderAdminController.updateOrderStatus
 )
 router.post(
     `/getCustomerOrders`,
     requireSignin,
-    adminMiddleware,
+    // adminMiddleware,
     OrderAdminController.getCustomerOrders
 )
 router.post(
     `/testSearch`,
     requireSignin,
-    adminMiddleware,
+    // adminMiddleware,
     OrderAdminController.search
 )
 router.post(
     `/getAllOrder`,
     requireSignin,
-    adminMiddleware,
+    // adminMiddleware,
     OrderAdminController.getAllOrders
 )
 router.post(
     `/searchOrder`,
     requireSignin,
-    adminMiddleware,
+    // adminMiddleware,
     OrderAdminController.searchOrders
 )
 
 router.post(
     `/getDataFilterOrder`,
     requireSignin,
-    adminMiddleware,
+    // adminMiddleware,
     OrderAdminController.getDataFilterOrder
 )
 
 router.post(
     `/getOrders`,
     requireSignin,
-    adminMiddleware,
+    // adminMiddleware,
     OrderAdminController.getOrders
 )
 
 router.delete(
     '/deleteOrderById',
     requireSignin,
-    adminMiddleware,
+    // adminMiddleware,
     OrderAdminController.deleteOrderById
 )
 

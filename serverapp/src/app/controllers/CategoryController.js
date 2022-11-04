@@ -34,25 +34,30 @@ class CategoryController {
         res.setHeader('Access-Control-Allow-Origin', '*')
         res.setHeader('Access-Control-Allow-Headers', '*')
         res.header('Access-Control-Allow-Credentials', true)
-        const categoryObject = {
-            name: req.body.name,
-            slug: `${slugify(req.body.name)}-${shortid.generate()}` ,
-            categoryImage: req.body.categoryImage
-        }
-        if (req.file) {
-            categoryObject.categoryImage = `/uploads/${req.file.filename}`
-        }
-        if (req.body.parentId) {
-            categoryObject.parentId = req.body.parentId
-        }
-        const cat = new Category(categoryObject)
-        // eslint-disable-next-line consistent-return
-        cat.save((error, category) => {
-            if (error) return res.status(400).json({ error })
-            if (category) {
-                return res.status(201).json({ category })
+        if(req.actions.includes('Them-nhan-hang')) {
+            const categoryObject = {
+                name: req.body.name,
+                slug: `${slugify(req.body.name)}-${shortid.generate()}` ,
+                categoryImage: req.body.categoryImage
             }
-        })
+            if (req.file) {
+                categoryObject.categoryImage = `/uploads/${req.file.filename}`
+            }
+            if (req.body.parentId) {
+                categoryObject.parentId = req.body.parentId
+            }
+            const cat = new Category(categoryObject)
+            // eslint-disable-next-line consistent-return
+            cat.save((error, category) => {
+                if (error) return res.status(400).json({ error })
+                if (category) {
+                    return res.status(201).json({ category })
+                }
+            })
+        }
+        else {
+            return res.status(403).send('Khongduquyen');
+        }
     }
 
     getCategories(req, res, next) {
@@ -71,114 +76,49 @@ class CategoryController {
     }
 
     async updateCategories(req, res, next) {
-        Category.findOne({_id: req.body._id}, function(err, obj) {
-            console.log(req.body)
-            const tempSlug = `${slugify(req.body.nameCategory)}-${shortid.generate()}`;
-            console.log(tempSlug);
-            Category.updateOne(
-                { 
-                    _id: req.body._id, 
-                },
-                {
-                    $set: {
-                        name: req.body.nameCategory,
-                        slug: tempSlug,
-                        categoryImage: req.body.categoryImage
+        if(req.actions.includes('Chinh-sua-nhan-hang')) {
+            Category.findOne({_id: req.body._id}, function(err, obj) {
+                console.log(req.body)
+                const tempSlug = `${slugify(req.body.nameCategory)}-${shortid.generate()}`;
+                console.log(tempSlug);
+                Category.updateOne(
+                    { 
+                        _id: req.body._id, 
+                    },
+                    {
+                        $set: {
+                            name: req.body.nameCategory,
+                            slug: tempSlug,
+                            categoryImage: req.body.categoryImage
+                        }
                     }
-                }
-            ).exec((error, category) => {
-                if (error) return res.status(400).json({ error })
-                if (category) {
-                    res.status(201).json({ category })
-                }
-            })
-        });
+                ).exec((error, category) => {
+                    if (error) return res.status(400).json({ error })
+                    if (category) {
+                        res.status(201).json({ category })
+                    }
+                })
+            });
+        } 
+        else {
+            return res.status(403).send('Khongduquyen');
+        }
     }
-
-    // async updateCategories(req, res) {
-    //     res.setHeader('Access-Control-Allow-Origin', '*')
-    //     res.setHeader('Access-Control-Allow-Headers', '*')
-    //     res.header('Access-Control-Allow-Credentials', true)
-    //     const { _id, name, parentId, type } = req.body
-    //     const updatedCategories = []
-    //     if (name instanceof Array) {
-    //         for (let i = 0; i < name.length; i++) {
-    //             const category = {
-    //                 name: name[i],
-    //                 type: type[i],
-    //             }
-    //             if (parentId[i] !== '') {
-    //                 category.parentId = parentId[i]
-    //             }
-    //             // eslint-disable-next-line no-await-in-loop
-    //             const updatedCategory = await Category.findOneAndUpdate(
-    //                 { _id: _id[i] },
-    //                 category,
-    //                 { new: true }
-    //             )
-    //             updatedCategories.push(updatedCategory)
-    //         }
-    //         return res.status(201).json({ updatedCategories })
-    //     }
-    //     const category = {
-    //         name,
-    //         type,
-    //     }
-    //     if (parentId !== '') {
-    //         category.parentId = parentId
-    //     }
-    //     const updatedCategory = await Category.findOneAndUpdate(
-    //         { _id },
-    //         category,
-    //         {
-    //             new: true,
-    //         }
-    //     )
-    //     return res.status(201).json({ updatedCategory })
-    // }
 
     deleteCategories = (req, res) => {
-        // const { catId } = req.body.payload
-        // if (catId) {
-        //     Category.deleteMany({ _id: catId }).exec((error, result) => {
-        //         if (error) return res.status(400).json({ error })
-        //         if (result) {
-        //             res.status(202).json({ result })
-        //         }
-        //     })
-        // } else {
-        //     res.status(400).json({ error: 'Params required' })
-        // }
-        // console.log(req.body.data.ids._id)
-        Category.deleteOne({ _id: req.body.data.ids._id}).exec((error, result) => {
-            if (error) return res.status(400).json({ error })
-            if (result) {
-                res.status(202).json({ result })
-            }
-        })
+        if(req.actions.includes('Xoa-nhan-hang')) {
+            Category.deleteOne({ _id: req.body.data.ids._id}).exec((error, result) => {
+                if (error) return res.status(400).json({ error })
+                if (result) {
+                    res.status(202).json({ result })
+                }
+            })
+        } 
+        else {
+            return res.status(403).send('Khongduquyen');
+        }
     }
 
-    // async deleteCategories(req, res) {
-    //     res.setHeader('Access-Control-Allow-Origin', '*')
-    //     res.setHeader('Access-Control-Allow-Headers', '*')
-    //     res.header('Access-Control-Allow-Credentials', true)
-    //     Category.deleteOne({_id: req.body.ids})
-    //     const { ids } = req.body.ids
-    //     const deleteCategories = []
-    //     for (let i = 0; i < ids.length; i++) {
-    //         // eslint-disable-next-line no-await-in-loop
-    //         const deleteCategory = await Category.findOneAndDelete({
-    //             // eslint-disable-next-line no-underscore-dangle
-    //             _id: ids[i]._id,
-    //         })
-    //         deleteCategories.push(deleteCategory)
-    //     }
-    //     if (deleteCategories.length === ids.length) {
-    //         res.status(200).json({ message: 'Categories removed' })
-    //     } else {
-    //         res.status(400).json({ message: 'Something went wrong' })
-    //     }
-    // }
     getDataFilter = async (req, res, next) => {
         const options = {
             limit: 99,
