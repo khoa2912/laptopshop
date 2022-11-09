@@ -245,16 +245,66 @@ class ProductController {
     //     })
     // }
 
-    updateProduct = (req, res) => {
+    updateProduct = async (req, res) => {
+        var productPicture = []
+        var listPictureUpload = [];
+        var listPicture = [];
+        req.body.productPicture.map((item) => {
+            if(item.img) {
+                listPicture.push(item.img)
+            }
+            else {
+                listPictureUpload.push(item)
+            }
+        })
+        productPicture = listPictureUpload.concat(listPicture)
+        if (req.body.productPicture.length > 0) {
+            productPicture = productPicture.map((item) => {
+                return { img: item }
+            })
+        }        
+        let cpu = [
+            {
+                cpuId: req.body.cpuId,
+                name: req.body.nameCpu,
+                type: req.body.typeCpu
+            }
+        ]
+
+        let color = [
+            {
+                colorId: req.body.colorId,
+                name: req.body.nameColor,
+                type: req.body.typeColor
+            }
+        ]
+
+        let ram = [
+            {
+                ramId: req.body.ramId,
+                name: req.body.nameRam,
+                type: req.body.typeRam
+            }
+        ]
+
+        let manhinh = [
+            {
+                screenId: req.body.screenId,
+                name: req.body.nameScreen,
+                type: req.body.typeScreen
+            }
+        ]
+
+
         let descriptionTable = [
             {
                 baohanh: req.body.timeBaoHanh,
                 Series: req.body.series,
-                color: req.body.color,
-                cpu: req.body.cpu,
+                color: color,
+                cpu: cpu,
                 cardDohoa: req.body.card,
-                ram: req.body.ram,
-                manhinh: req.body.manhinh,
+                ram: ram,
+                manhinh: manhinh,
                 ocung: req.body.ocung,
                 hedieuhanh: req.body.hedieuhanh,
                 khoiluong: req.body.khoiluong,
@@ -268,13 +318,15 @@ class ProductController {
                 {
                     $set: {
                         name: req.body.name,
+                        slug: slugify(req.body.name),
                         regularPrice: req.body.regularPrice,
                         salePrice: req.body.salePrice,
                         quantity: req.body.quantity,
-                        productPicture: req.body.productPicture,
+                        productPicture,
+                        tag: req.body.listTag,
                         description: req.body.description,
                         descriptionTable: descriptionTable,
-                        category: req.body.categoryId,
+                        category: req.body.categoryId
                     },
                 }
             ).exec((error, product) => {
@@ -366,24 +418,29 @@ class ProductController {
     }
     getProductDetailsById = (req, res) => {
         const { productId } = req.params
-        if (productId) {
-            if (myCache.has(`product${productId}`)) {
-                res.status(200).json({
-                    product: myCache.get(`product${productId}`),
-                })
-            } else {
-                Product.findOne({ _id: productId })
-                    .populate({ path: 'category', select: '_id name' })
-                    .exec((error, product) => {
-                        if (error) return res.status(400).json({ error })
-                        if (product) {
-                            myCache.set(`product${productId}`, product)
-                            res.status(200).json({ product })
+        try {
+            Product.findOne({_id: productId}, function(err, obj) {
+                Product.updateOne(
+                    { 
+                        _id: productId, 
+                    },
+                    {
+                        $set: {
+                            view: obj.view + 1
                         }
-                    })
-            }
-        } else {
-            return res.status(400).json({ error: 'Params required' })
+                    }
+                ).exec((error, product) => {
+                    if (error) return res.status(400).json({ error })
+                    if (product) {
+                        Product.findOne({_id: productId}, function(err, obj) {
+                            res.status(201).json({ product: obj })
+                        })
+                        // res.status(201).json({ product })
+                    }
+                })
+            });  
+        } catch (error) {
+            console.log(error)
         }
     }
     deleteProductById = (req, res) => {
